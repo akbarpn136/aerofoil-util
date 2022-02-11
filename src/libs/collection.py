@@ -1,6 +1,6 @@
-import cv2
-import pandas as pd
 import torch
+import pandas as pd
+from PIL import Image
 from torch.utils.data import Dataset
 
 
@@ -14,8 +14,8 @@ class AerofoilForceDataset(Dataset):
         return self.df.index.size
 
     def __getitem__(self, item):
-        img = cv2.imread(f"{self.imgdir}/{self.df.iloc[item]['img']}")
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = Image.open(f"{self.imgdir}/{self.df.iloc[item]['img']}")
+        img = img.convert("RGB")
 
         labels = self.df.iloc[item][["cl", "cd", "cm"]].to_numpy(dtype="float32")
         labels = torch.from_numpy(labels)
