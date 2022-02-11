@@ -86,4 +86,4 @@ class AerofoilNN(nn.Module):
 
             self.valid_lossList.append(loss_sum_validation)
 
-            print(f"Epoch {epoch}/{epochs}: Train Loss: {loss_sum_train} | Validation Loss: {loss_sum_validation}")
+            print(f"Epoch {epoch + 1}/{epochs}: Train Loss: {loss_sum_train} | Validation Loss: {loss_sum_validation}")
