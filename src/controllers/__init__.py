@@ -1,3 +1,1 @@
-import typer
-
-app = typer.Typer()
+from .entry import app
