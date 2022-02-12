@@ -1,4 +1,4 @@
-from controllers import app
+from . import app
 
 
 @app.callback()
