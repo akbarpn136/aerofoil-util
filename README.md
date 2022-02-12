@@ -1,6 +1,10 @@
 # sekolah/aerofoil-cnn
 
-Repositori pengembangan model AI melalui arsitektur CNN dengan modifikasi LeNet-5. Geometri airfoil digunakan sebagai data masukan kedalam model CNN dan label berupa prediksi Koefisien aerodinamika.
+Repositori pengembangan model AI melalui
+arsitektur CNN dengan modifikasi LeNet-5.
+Geometri airfoil digunakan sebagai data
+masukan kedalam model CNN dan label berupa
+prediksi Koefisien aerodinamika.
 
 ## Getting Started
 
