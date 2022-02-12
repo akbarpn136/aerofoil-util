@@ -1,2 +1,2 @@
-from controllers.intro import *
-from controllers.gen import *
+from .intro import *
+from .gen import *
