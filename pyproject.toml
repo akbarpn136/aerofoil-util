@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "aerofoil"
+version = "0.1.0"
+description = "Small python package for generating airfoil geometry representation"
+authors = ["Arizal Akbar Zikri <akbarpn136@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+aerofoil = "aerofoil.main:app"
+
+[tool.poetry.dependencies]
+python = "~3.9"
+typer = {extras = ["all"], version = "^0.4.0"}
+numpy = "^1.22.2"
+matplotlib = "^3.5.1"
+scikit-fmm = "^2022.2.2"
+scipy = "^1.8.0"
+opencv-contrib-python = "^4.5.5"
+torch = "^1.10.2"
+torchvision = "^0.11.3"
+pandas = "^1.4.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
