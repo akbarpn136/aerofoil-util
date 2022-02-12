@@ -4,8 +4,8 @@ from torchvision import transforms
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
-from src.libs.arch import AerofoilNN
-from src.libs.collection import AerofoilForceDataset
+from services.arch import AerofoilNN
+from services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
     batch_size = 21
