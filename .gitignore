@@ -2,4 +2,4 @@
 .vscode
 *.pt
 *.csv
-*.jpg
+out
