@@ -1,7 +1,8 @@
-import os
+import time
 import typer
 import pandas as pd
 
+from services.image import rendering
 from . import app
 
 
@@ -9,23 +10,49 @@ from . import app
 def generate(
         airfoilname: str = typer.Argument(
             ...,
-            help="Airfoil name code such as naca2412",
+            help="Airfoil name code such as naca2412.",
             metavar="airfoilname"
         ),
         filename: str = typer.Argument(
             ...,
-            help="Airfoil coordinate file in csv without a header from current directory",
+            help="Airfoil coordinate file in csv without a header from current directory.",
             metavar="filename"
+        ),
+        kind: str = typer.Option(
+            "binary",
+            "--kind",
+            "-k",
+            help="Airfoil geometry representation: binary, mesh or sdf.",
         ),
         angle_start: int = typer.Option(
             0,
             "--start",
-            help="Start from angle of attack e.g. -10",
+            "-st",
+            help="Start from angle of attack e.g. -10.",
         ),
         angle_stop: int = typer.Option(
-            1,
+            0,
             "--stop",
-            help="Stop to angle of attack e.g. 10",
+            "-sp",
+            help="Stop to angle of attack e.g. 10.",
+        ),
+        resolution: int = typer.Option(
+            1024,
+            "--res",
+            "-rs",
+            help="Airfoil image resolution in pixel.",
+        ),
+        re: int = typer.Option(
+            500000,
+            "--re",
+            "-r",
+            help="Reynold number.",
+        ),
+        ma: float = typer.Option(
+            0.0,
+            "--ma",
+            "-m",
+            help="Mach number.",
         ),
 ):
     """
@@ -52,6 +79,18 @@ def generate(
             coord_points = stack.to_dict("records")
             typer.secho(f"Using Lednicer format for airfoil {airfoilname}", fg=typer.colors.CYAN)
 
+        typer.secho(f"Rendering airfoil {airfoilname}", fg=typer.colors.CYAN)
+        start = time.time()
+        if kind != "mesh":
+            rendering(airfoilname, coord_points, resolution, kind, angle_start, angle_stop, re, ma)
+        elif kind == "mesh":
+            pass
+        else:
+            typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
+            typer.Abort()
+
+        typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s", fg=typer.colors.GREEN)
+
         # Generate many SDF for airfoil using multiprocessing
         # mpool = multiprocessing.Pool()
         # first_arg = partial(work_on_sdf, points=coord_points, airfoil=airfoil)
@@ -61,4 +100,3 @@ def generate(
         typer.secho(f"{err}", fg=typer.colors.RED)
 
         raise typer.Abort()
-
