@@ -2,8 +2,8 @@ import time
 import typer
 import pandas as pd
 
-from services.image import rendering
 from . import app
+from services.image import rendering
 
 
 @app.command()
@@ -79,7 +79,7 @@ def generate(
             coord_points = stack.to_dict("records")
             typer.secho(f"Using Lednicer format for airfoil {airfoilname}", fg=typer.colors.CYAN)
 
-        typer.secho(f"Rendering airfoil {airfoilname}", fg=typer.colors.CYAN)
+        typer.secho(f"Rendering {kind} airfoil {airfoilname}", fg=typer.colors.CYAN)
         start = time.time()
         if kind != "mesh":
             rendering(airfoilname, coord_points, resolution, kind, angle_start, angle_stop, re, ma)
