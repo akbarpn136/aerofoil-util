@@ -4,6 +4,7 @@ import pandas as pd
 
 from . import app
 from services.image import rendering
+from services.mesh import meshing
 
 
 @app.command()
@@ -67,7 +68,6 @@ def generate(
         val = int(round(val, 0))
         if val == 1:
             typer.secho(f"Using Selig format for airfoil {airfoilname}", fg=typer.colors.CYAN)
-            coord_points = df.to_dict("records")
         else:
             first_idx = df.loc[df.x == int(round(1, 0))].index.values
             first_half = df.iloc[:first_idx[0] + 1]
@@ -75,16 +75,15 @@ def generate(
 
             # Reverse rows from first_half
             first_half = first_half.loc[::-1]
-            stack = pd.concat([first_half, second_half], axis=0, ignore_index=True)
-            coord_points = stack.to_dict("records")
+            df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
             typer.secho(f"Using Lednicer format for airfoil {airfoilname}", fg=typer.colors.CYAN)
 
         typer.secho(f"Rendering {kind} airfoil {airfoilname}", fg=typer.colors.CYAN)
         start = time.time()
         if kind != "mesh":
-            rendering(airfoilname, coord_points, resolution, kind, angle_start, angle_stop, re, ma)
+            rendering(airfoilname, df.to_dict("records"), resolution, kind, angle_start, angle_stop, re, ma)
         elif kind == "mesh":
-            pass
+            meshing(airfoilname, df.to_numpy(), kind, angle_start, angle_stop, re, ma)
         else:
             typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
             typer.Abort()
