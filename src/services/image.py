@@ -25,6 +25,7 @@ def rotating(draw, angle):
 def to_img(angle, path, points, resolution, kind, re, ma):
     # Image has 2 dimensions shape
     dimension = 2
+    padding = 110
     offset_y = resolution // 2
     phi = -1 * np.ones((resolution, resolution, 1), dtype="uint8")
     airfoils = np.empty((0, dimension), int)
@@ -42,6 +43,7 @@ def to_img(angle, path, points, resolution, kind, re, ma):
     airfoils = airfoils.reshape((-1, 1, 2))
     cv2.fillPoly(phi, [airfoils], (255, 255, 255), lineType=cv2.LINE_AA)
     phi = cv2.flip(phi, 0)
+    phi = cv2.copyMakeBorder(phi, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=[-1, -1, -1])
     phi = rotating(phi, angle)
 
     fig, ax = plt.subplots()
