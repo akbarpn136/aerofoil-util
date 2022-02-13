@@ -33,7 +33,7 @@ if __name__ == '__main__':
     loss_func = nn.MSELoss()
     optim = torch.optim.Adam(model.parameters(), learning_rate)
 
-    model.fit(loss_func, optim, train_loader, valid_loader, epochs=30)
+    model.fit(loss_func, optim, train_loader, valid_loader, epochs=100)
 
     torch.save(model.state_dict(), "aerocnn.pt")
 
