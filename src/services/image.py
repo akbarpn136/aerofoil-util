@@ -55,7 +55,7 @@ def to_img(angle, name, path, points, resolution, kind, re, ma):
     if kind == "binary":
         colormap = "gray"
     elif kind == "sdf":
-        colormap = "plasma"
+        colormap = "jet"
         phi = skfmm.distance(phi, dx=1, order=2)
     else:
         colormap = "gray"
