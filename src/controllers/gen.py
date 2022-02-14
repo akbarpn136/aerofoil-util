@@ -90,11 +90,6 @@ def generate(
 
         typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s", fg=typer.colors.GREEN)
 
-        # Generate many SDF for airfoil using multiprocessing
-        # mpool = multiprocessing.Pool()
-        # first_arg = partial(work_on_sdf, points=coord_points, airfoil=airfoil)
-        # mpool.map(first_arg, alpha)
-
     except FileNotFoundError as err:
         typer.secho(f"{err}", fg=typer.colors.RED)
 
