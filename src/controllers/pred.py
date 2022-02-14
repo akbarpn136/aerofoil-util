@@ -2,12 +2,12 @@ import glob
 import torch
 import typer
 import numpy as np
+import pandas as pd
 from PIL import Image
+from services.arch import AerofoilNN
 from torchvision.transforms import transforms
 
 from . import app
-from services.arch import AerofoilNN
-from services.collection import AerofoilForceDataset
 
 
 @app.command()
@@ -23,10 +23,15 @@ def predict(
     (Cl, Cd and Cm) with varying angle of attack.
     """
     images = []
+    angles = []
     path = f"out/{airfoilname}"
     all_files = glob.glob(f"{path}/*.jpg")
 
     for filename in all_files:
+        split = filename.split("_")[-1]
+        angle = split.replace(".jpg", "")
+        angle = int(angle)
+        angles.append(angle)
         img = Image.open(filename)
         img = np.asarray(img)
 
@@ -40,22 +45,28 @@ def predict(
         images.shape[2]
     ))
     images = torch.from_numpy(images)
+
     transform = transforms.Compose([
         transforms.Resize(128),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     ])
 
-    images = transform(images)
+    img = transform(images)
 
-    dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = AerofoilNN(dev).to(dev)
-    model.load_state_dict(
-        torch.load("aerocnn.pt", map_location=dev)
-    )
-    model.eval()
+    with torch.no_grad():
+        dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = AerofoilNN(None).to(dev)
+        model.load_state_dict(
+            torch.load("aerocnn.pt", map_location=dev)
+        )
 
-    res = model(images)
+        res = model(img.to(dev))
+        df = pd.DataFrame(res)
+        df.columns = ["cl", "cd", "cm"]
+        df = (df * 0.5) + 0.5
+        df["sudut"] = 0
+        df = df.sort_values("sudut")
 
-    print(res)
-    print(res.shape)
+        df.to_csv("prediction.csv")
 
-    typer.secho(f"Prediction result in {path}", fg=typer.colors.MAGENTA)
+        typer.secho(f"Saving prediction result", fg=typer.colors.MAGENTA)
