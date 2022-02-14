@@ -18,9 +18,20 @@ class AerofoilForceDataset(Dataset):
         img = img.convert("RGB")
 
         labels = self.df.iloc[item][["cl", "cd", "cm"]].to_numpy(dtype="float32")
+        labels = denorm(labels, 0.5, 0.5)
         labels = torch.from_numpy(labels)
 
         if self.transform:
             img = self.transform(img)
 
         return img, labels
+
+
+def denorm(x, mean, std, normalize=True):
+    if normalize:
+        xx = (x - mean) / std
+
+    else:
+        xx = x * std + mean
+
+    return xx
