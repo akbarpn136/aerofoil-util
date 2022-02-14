@@ -64,7 +64,7 @@ def predict(
         df = pd.DataFrame(res)
         df.columns = ["cl", "cd", "cm"]
         df = (df * 0.5) + 0.5
-        df["sudut"] = 0
+        df["sudut"] = angles
         df = df.sort_values("sudut")
 
         df.to_csv("prediction.csv")
