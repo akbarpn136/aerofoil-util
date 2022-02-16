@@ -9,7 +9,7 @@ from services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
     batch_size = 21
-    num_epochs = 100
+    num_epochs = 200
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
@@ -29,15 +29,17 @@ if __name__ == '__main__':
     valid_loader = DataLoader(dataset=valid_dataset, batch_size=batch_size, shuffle=True)
 
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = AerofoilNN(dev).to(dev)
+    model = AerofoilNN().to(dev)
     loss_func = nn.MSELoss()
     optim = torch.optim.Adam(model.parameters(), learning_rate)
 
-    model.fit(loss_func, optim, train_loader, valid_loader, epochs=num_epochs)
+    model.fit(loss_func, optim, train_loader, valid_loader, device=dev, epochs=num_epochs)
 
     torch.save(model.state_dict(), "aerocnn.pt")
 
     plt.plot(model.lossList, label="Train Loss")
     plt.plot(model.valid_lossList, label="Valid Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("MSE")
     plt.legend()
     plt.show()
