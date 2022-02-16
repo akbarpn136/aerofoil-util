@@ -2,12 +2,11 @@ from torch import nn
 
 
 class AerofoilNN(nn.Module):
-    def __init__(self, device):
+    def __init__(self):
         super(AerofoilNN, self).__init__()
 
         self.lossList = []
         self.valid_lossList = []
-        self.device = device
 
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 10, 13),
@@ -58,14 +57,20 @@ class AerofoilNN(nn.Module):
 
         return self.fc2(f5)
 
-    def fit(self, criterion, optimizer, train_loader, valid_loader, epochs=100):
+    def fit(self,
+            criterion,
+            optimizer,
+            train_loader,
+            valid_loader,
+            device,
+            epochs=100):
         for epoch in range(epochs):
             loss_sum_train = 0
             loss_sum_validation = 0
 
             for _, (images, labels) in enumerate(train_loader):
-                images = images.to(self.device)
-                labels = labels.to(self.device)
+                images = images.to(device)
+                labels = labels.to(device)
 
                 output = self(images)
                 loss = criterion(output, labels)
@@ -78,8 +83,8 @@ class AerofoilNN(nn.Module):
             self.lossList.append(loss_sum_train)
 
             for _, (images, labels) in enumerate(valid_loader):
-                images = images.to(self.device)
-                labels = labels.to(self.device)
+                images = images.to(device)
+                labels = labels.to(device)
                 output_valid = self(images)
                 loss = criterion(output_valid, labels)
                 loss_sum_validation += loss.item()
