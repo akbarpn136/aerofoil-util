@@ -16,14 +16,19 @@ def predict(
             ...,
             help="Airfoil name code such as naca2412.",
             metavar="airfoilname"
-        )
+        ),
+        kind: str = typer.Option(
+            "sdf",
+            "--kind",
+            "-k",
+            help="Airfoil geometry representation: binary, mesh or sdf.",
+        ),
 ):
     """
     Function to predict the airfoil coeficient aerodynamic
     (Cl, Cd and Cm) with varying angle of attack.
     """
-    path = f"out/{airfoilname}"
-    all_files = glob.glob(f"{path}/*.jpg")
+    all_files = glob.glob(f"out/{airfoilname}_{kind}*.jpg")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = AerofoilNN().to(dev)
     model.load_state_dict(
