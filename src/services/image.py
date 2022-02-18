@@ -22,7 +22,7 @@ def rotating(draw, angle):
     return rotated
 
 
-def to_img(angle, name, path, points, resolution, kind, re, ma):
+def to_img(angle, name, points, resolution, kind, re, ma):
     # Image has 2 dimensions shape
     dimension = 2
     padding = 110
@@ -62,12 +62,12 @@ def to_img(angle, name, path, points, resolution, kind, re, ma):
 
     plt.imshow(phi, cmap=plt.get_cmap(colormap))
 
-    plt.savefig(f"{path}/{name}_{kind}_{re}_{ma}_{angle}.jpg", bbox_inches="tight", pad_inches=0)
+    plt.savefig(f"out/{name}_{kind}_{re}_{ma}_{angle}.jpg", bbox_inches="tight", pad_inches=0)
     plt.close("all")
 
 
 def rendering(name, points, resolution, kind, start, stop, re, ma):
-    path = f"out/{name}"
+    path = "out"
     isExist = os.path.exists(path)
 
     if not isExist:
@@ -78,7 +78,6 @@ def rendering(name, points, resolution, kind, start, stop, re, ma):
         partial_func = partial(
             to_img,
             name=name,
-            path=path,
             points=points,
             resolution=resolution,
             kind=kind,
