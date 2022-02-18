@@ -8,13 +8,13 @@ from services.arch import AerofoilNN
 from services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
-    batch_size = 21
-    num_epochs = 200
+    batch_size = 29
+    num_epochs = 100
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
-        "payload/airfoil.csv",
-        "payload",
+        "out.csv",
+        "out",
         transform=transforms.Compose([
             transforms.Resize(128),
             transforms.ToTensor(),
@@ -37,8 +37,8 @@ if __name__ == '__main__':
 
     torch.save(model.state_dict(), "aerocnn.pt")
 
-    plt.plot(model.lossList, label="Train Loss")
-    plt.plot(model.valid_lossList, label="Valid Loss")
+    plt.plot(model.lossList[1:], label="Train Loss")
+    plt.plot(model.valid_lossList[1:], label="Valid Loss")
     plt.xlabel("Epoch")
     plt.ylabel("MSE")
     plt.legend()
