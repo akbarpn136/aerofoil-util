@@ -59,7 +59,7 @@ def generate(
     """
     all_files = glob.glob(f"{path}/*.dat")
     for filename in all_files:
-        airfoilname = filename.replace("foil", "") \
+        airfoilname = filename.replace(path, "") \
             .replace("\\", "") \
             .replace("/", "") \
             .replace(".dat", "")\
