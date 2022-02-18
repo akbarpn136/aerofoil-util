@@ -39,8 +39,8 @@ def rsquare(y, yhat):
 
 
 if __name__ == "__main__":
-    dt = pd.read_csv("../payload/airfoil.csv")
-    dt = dt.loc[dt["nama"] == "naca0006"]
+    dt = pd.read_csv("../out.csv")
+    dt = dt.loc[dt["name"] == "NACA0012"]
     dt = dt[["alpha", "cl", "cd", "cm"]]
     dt = dt.sort_values("alpha")
     df = pd.read_csv("../prediction.csv")
