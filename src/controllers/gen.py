@@ -1,4 +1,5 @@
 import time
+import glob
 import typer
 import pandas as pd
 
@@ -9,16 +10,6 @@ from services.mesh import meshing
 
 @app.command()
 def generate(
-        airfoilname: str = typer.Argument(
-            ...,
-            help="Airfoil name code such as naca2412.",
-            metavar="airfoilname"
-        ),
-        filename: str = typer.Argument(
-            ...,
-            help="Airfoil coordinate file in csv without a header from current directory.",
-            metavar="filename"
-        ),
         kind: str = typer.Option(
             "binary",
             "--kind",
@@ -55,42 +46,56 @@ def generate(
             "-m",
             help="Mach number.",
         ),
+        path: str = typer.Option(
+            "foil",
+            "--path",
+            "-p",
+            help="Path to airfoil.dat files",
+        ),
 ):
     """
     Function to generate airfoil geometry representation
     such as binary, mesh-like or SDF (Signed Distance Fields).
     """
-    try:
-        df = pd.read_csv(filename, delim_whitespace=True, header=None)
-        df.columns = ["x", "y"]
+    all_files = glob.glob(f"{path}/*.dat")
+    for filename in all_files:
+        airfoilname = filename.replace("foil", "") \
+            .replace("\\", "") \
+            .replace("/", "") \
+            .replace(".dat", "")\
+            .replace(" ", "")
 
-        val = df.loc[0, "x"]
-        val = int(round(val, 0))
-        if val == 1:
-            typer.secho(f"Using Selig format for airfoil {airfoilname}", fg=typer.colors.CYAN)
-        else:
-            first_idx = df.loc[df.x == int(round(1, 0))].index.values
-            first_half = df.iloc[:first_idx[0] + 1]
-            second_half = df.iloc[first_idx[0] + 2:]
+        try:
+            df = pd.read_csv(filename, delim_whitespace=True, header=None, skiprows=1)
+            df.columns = ["x", "y"]
 
-            # Reverse rows from first_half
-            first_half = first_half.loc[::-1]
-            df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
-            typer.secho(f"Using Lednicer format for airfoil {airfoilname}", fg=typer.colors.CYAN)
+            val = df.loc[0, "x"]
+            val = int(round(val, 0))
+            if val == 1:
+                typer.secho(f"Using Selig format for airfoil {airfoilname}", fg=typer.colors.CYAN)
+            else:
+                first_idx = df.loc[df.x == int(round(1, 0))].index.values
+                first_half = df.iloc[:first_idx[0] + 1]
+                second_half = df.iloc[first_idx[0] + 2:]
 
-        typer.secho(f"Rendering {kind} airfoil {airfoilname}", fg=typer.colors.CYAN)
-        start = time.time()
-        if kind != "mesh":
-            rendering(airfoilname, df.to_dict("records"), resolution, kind, angle_start, angle_stop, re, ma)
-        elif kind == "mesh":
-            meshing(airfoilname, df.to_numpy(), kind, angle_start, angle_stop, re, ma)
-        else:
-            typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
-            typer.Abort()
+                # Reverse rows from first_half
+                first_half = first_half.loc[::-1]
+                df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
+                typer.secho(f"Using Lednicer format for airfoil {airfoilname}", fg=typer.colors.CYAN)
 
-        typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s", fg=typer.colors.GREEN)
+            typer.secho(f"Rendering {kind} airfoil {airfoilname}", fg=typer.colors.CYAN)
+            start = time.time()
+            if kind != "mesh":
+                rendering(airfoilname, df.to_dict("records"), resolution, kind, angle_start, angle_stop, re, ma)
+            elif kind == "mesh":
+                meshing(airfoilname, df.to_numpy(), kind, angle_start, angle_stop, re, ma)
+            else:
+                typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
+                typer.Abort()
 
-    except FileNotFoundError as err:
-        typer.secho(f"{err}", fg=typer.colors.RED)
+            typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s", fg=typer.colors.GREEN)
 
-        raise typer.Abort()
+        except FileNotFoundError as err:
+            typer.secho(f"{err}", fg=typer.colors.RED)
+
+            raise typer.Abort()
