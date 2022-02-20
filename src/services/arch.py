@@ -68,6 +68,7 @@ class AerofoilNN(nn.Module):
             loss_sum_train = 0
             loss_sum_validation = 0
 
+            self.train()
             for _, (images, labels) in enumerate(train_loader):
                 images = images.to(device)
                 labels = labels.to(device)
@@ -82,6 +83,7 @@ class AerofoilNN(nn.Module):
 
             self.lossList.append(loss_sum_train)
 
+            self.eval()
             for _, (images, labels) in enumerate(valid_loader):
                 images = images.to(device)
                 labels = labels.to(device)
