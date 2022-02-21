@@ -1,11 +1,13 @@
-import time
-import glob
+import os
 import typer
+import itertools
 import pandas as pd
+from mpire import WorkerPool
+from multiprocessing import cpu_count
 
 from . import app
-from services.image import rendering
 from services.mesh import meshing
+from services.image import rendering
 
 
 @app.command()
@@ -65,41 +67,59 @@ def generate(
     """
     df = pd.read_csv(f"{filename}")
     names = df["name"].unique()
+    angles = range(angle_start, angle_stop + 1)
+    resolution = [resolution]
+    kind = [kind]
+    re = [re]
+    ma = [ma]
+    path = [path]
+    paramlist = list(itertools.product(names, angles, resolution, kind, re, ma, path))
+    path = "out"
+    isExist = os.path.exists(path)
 
-    for name in names:
-        try:
-            df = pd.read_csv(f"{path}/{name}.dat", delim_whitespace=True, header=None, skiprows=1)
-            df.columns = ["x", "y"]
+    if not isExist:
+        typer.secho("Creating new folder", fg=typer.colors.YELLOW)
+        os.makedirs(path)
 
-            val = df.loc[0, "x"]
-            val = int(round(val, 0))
-            if val == 1:
-                typer.secho(f"Using Selig format for airfoil {name}", fg=typer.colors.CYAN)
-            else:
-                first_idx = df.loc[df.x == int(round(1, 0))].index.values
-                first_half = df.iloc[:first_idx[0] + 1]
-                second_half = df.iloc[first_idx[0] + 2:]
+    typer.secho(f"Generating airfoil image. It may take time ⏳", fg=typer.colors.CYAN)
 
-                # Reverse rows from first_half
-                first_half = first_half.loc[::-1]
-                df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
-                typer.secho(f"Using Lednicer format for airfoil {name}", fg=typer.colors.CYAN)
+    with WorkerPool(n_jobs=cpu_count()) as pool:
+        pool.map(to_img, paramlist, progress_bar=True)
 
-            typer.secho(f"Rendering {kind} airfoil {name}", fg=typer.colors.CYAN)
-            start = time.time()
-            airfoil_name = name.replace(" ", "")
 
-            if kind != "mesh":
-                rendering(airfoil_name, df.to_dict("records"), resolution, kind, angle_start, angle_stop, re, ma)
-            elif kind == "mesh":
-                meshing(airfoil_name, df.to_numpy(), kind, angle_start, angle_stop, re, ma)
-            else:
-                typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
-                typer.Abort()
+def to_img(*payload):
+    name = payload[0]
+    angle = payload[1]
+    resolution = payload[2]
+    kind = payload[3]
+    re = payload[4]
+    ma = payload[5]
+    path = payload[6]
 
-            typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s\n", fg=typer.colors.GREEN)
+    try:
+        df = pd.read_csv(f"{path}/{name}.dat", delim_whitespace=True, header=None, skiprows=1)
+        df.columns = ["x", "y"]
 
-        except FileNotFoundError as err:
-            typer.secho(f"{err}", fg=typer.colors.RED)
+        val = df.loc[0, "x"]
+        val = int(round(val, 0))
+        if val != 1:
+            first_idx = df.loc[df.x == int(round(1, 0))].index.values
+            first_half = df.iloc[:first_idx[0] + 1]
+            second_half = df.iloc[first_idx[0] + 2:]
 
-            raise typer.Abort()
+            # Reverse rows from first_half
+            first_half = first_half.loc[::-1]
+            df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
+
+        airfoil_name = name.replace(" ", "")
+        if kind != "mesh":
+            rendering(name, angle, df.to_dict("records"), resolution, kind, re, ma)
+        elif kind == "mesh":
+            meshing(name, angle, df.to_numpy(), kind, re, ma)
+        else:
+            typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
+            typer.Abort()
+    except FileNotFoundError as err:
+        typer.secho(f"{err}", fg=typer.colors.RED)
+
+        raise typer.Abort()
