@@ -1,5 +1,6 @@
 import os
 import cv2
+import glob
 import skfmm
 import typer
 import numpy as np
@@ -23,47 +24,51 @@ def rotating(draw, angle):
 
 
 def to_img(angle, name, points, resolution, kind, re, ma):
-    # Image has 2 dimensions shape
-    dimension = 2
+    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
+    dimension = 2  # Image has 2 dimensions shape
     padding = 110
     offset_y = resolution // 2
     phi = -1 * np.ones((resolution, resolution, 1), dtype="uint8")
     airfoils = np.empty((0, dimension), int)
+    files_present = glob.glob(f"out/{airfoil_image_name}")
 
-    for point in points:
-        airfoils = np.append(
-            airfoils,
-            np.array([[
-                round(resolution * point["x"]),
-                round(resolution * point["y"] + offset_y)
-            ]]),
-            axis=0
-        )
+    if len(files_present) == 0:
+        for point in points:
+            airfoils = np.append(
+                airfoils,
+                np.array([[
+                    round(resolution * point["x"]),
+                    round(resolution * point["y"] + offset_y)
+                ]]),
+                axis=0
+            )
 
-    airfoils = airfoils.reshape((-1, 1, 2))
-    cv2.fillPoly(phi, [airfoils], (255, 255, 255), lineType=cv2.LINE_AA)
-    phi = cv2.flip(phi, 0)
-    phi = cv2.copyMakeBorder(phi, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=[-1, -1, -1])
-    phi = rotating(phi, angle)
+        airfoils = airfoils.reshape((-1, 1, 2))
+        cv2.fillPoly(phi, [airfoils], (255, 255, 255), lineType=cv2.LINE_AA)
+        phi = cv2.flip(phi, 0)
+        phi = cv2.copyMakeBorder(phi, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=[-1, -1, -1])
+        phi = rotating(phi, angle)
 
-    fig, ax = plt.subplots()
-    plt.margins(x=0, y=0)
-    plt.axis("off")
-    ax.set_box_aspect(1)
-    plt.tight_layout()
+        fig, ax = plt.subplots()
+        plt.margins(x=0, y=0)
+        plt.axis("off")
+        ax.set_box_aspect(1)
+        plt.tight_layout()
 
-    if kind == "binary":
-        colormap = "gray"
-    elif kind == "sdf":
-        colormap = "jet"
-        phi = skfmm.distance(phi, dx=1, order=2)
+        if kind == "binary":
+            colormap = "gray"
+        elif kind == "sdf":
+            colormap = "jet"
+            phi = skfmm.distance(phi, dx=1, order=2)
+        else:
+            colormap = "gray"
+
+        plt.imshow(phi, cmap=plt.get_cmap(colormap))
+
+        plt.savefig(f"out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
+        plt.close("all")
     else:
-        colormap = "gray"
-
-    plt.imshow(phi, cmap=plt.get_cmap(colormap))
-
-    plt.savefig(f"out/{name}_{kind}_{re}_{ma}_{angle}.jpg", bbox_inches="tight", pad_inches=0)
-    plt.close("all")
+        typer.secho("Image already existed", fg=typer.colors.YELLOW)
 
 
 def rendering(name, points, resolution, kind, start, stop, re, ma):

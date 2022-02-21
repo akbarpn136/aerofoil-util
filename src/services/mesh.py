@@ -1,4 +1,5 @@
 import os
+import glob
 import typer
 import pygmsh
 import numpy as np
@@ -20,43 +21,49 @@ def rotate_around(pts, radians, origin=(0, 0)):
 
 
 def to_mesh(name, angle, points, kind, re, ma):
-    with pygmsh.geo.Geometry() as geom:
-        hole = geom.add_polygon(
-            rotate_around(
-                points,
-                np.radians(angle),
-                origin=np.mean(points, axis=0)
-            ),
-            make_surface=False
-        )
+    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
+    files_present = glob.glob(f"out/{airfoil_image_name}")
 
-        geom.add_polygon(
-            [
-                [-0.1, 0.6],
-                [-0.1, -0.6],
-                [1.1, -0.6],
-                [1.1, 0.6],
-            ],
-            mesh_size=0.1,
-            holes=[hole.curve_loop]
-        )
+    if len(files_present) == 0:
+        with pygmsh.geo.Geometry() as geom:
+            hole = geom.add_polygon(
+                rotate_around(
+                    points,
+                    np.radians(angle),
+                    origin=np.mean(points, axis=0)
+                ),
+                make_surface=False
+            )
 
-        mesh = geom.generate_mesh()
-        x = mesh.points[:, 0]
-        y = mesh.points[:, 1]
-        # z = mesh.points[:, 2]
-        tri = mesh.cells[1].data
+            geom.add_polygon(
+                [
+                    [-0.1, 0.6],
+                    [-0.1, -0.6],
+                    [1.1, -0.6],
+                    [1.1, 0.6],
+                ],
+                mesh_size=0.1,
+                holes=[hole.curve_loop]
+            )
 
-        plt.style.use("dark_background")
-        _, ax = plt.subplots()
-        plt.triplot(x, y, tri, color="white")
-        plt.margins(x=0, y=0)
-        plt.axis("off")
-        ax.set_box_aspect(1)
-        plt.tight_layout()
-        plt.savefig("naca.jpg", bbox_inches="tight", pad_inches=0)
-        plt.savefig(f"out/{name}_{kind}_{re}_{ma}_{angle}.jpg", bbox_inches="tight", pad_inches=0)
-        plt.close("all")
+            mesh = geom.generate_mesh()
+            x = mesh.points[:, 0]
+            y = mesh.points[:, 1]
+            # z = mesh.points[:, 2]
+            tri = mesh.cells[1].data
+
+            plt.style.use("dark_background")
+            _, ax = plt.subplots()
+            plt.triplot(x, y, tri, color="white")
+            plt.margins(x=0, y=0)
+            plt.axis("off")
+            ax.set_box_aspect(1)
+            plt.tight_layout()
+            plt.savefig("naca.jpg", bbox_inches="tight", pad_inches=0)
+            plt.savefig(f"out/{name}_{kind}_{re}_{ma}_{angle}.jpg", bbox_inches="tight", pad_inches=0)
+            plt.close("all")
+    else:
+        typer.secho("Image already existed", fg=typer.colors.YELLOW)
 
 
 def meshing(name, points, kind, start, stop, re, ma):
