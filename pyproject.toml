@@ -20,6 +20,7 @@ torch = "^1.10.2"
 torchvision = "^0.11.3"
 pandas = "^1.4.1"
 pygmsh = "^7.1.17"
+mpire = "^2.3.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
