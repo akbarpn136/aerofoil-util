@@ -52,27 +52,29 @@ def generate(
             "-p",
             help="Path to airfoil.dat files",
         ),
+        filename: str = typer.Option(
+            "out.csv",
+            "--filename",
+            "-f",
+            help="Filename for output csv file after using get command",
+        )
 ):
     """
     Function to generate airfoil geometry representation
     such as binary, mesh-like or SDF (Signed Distance Fields).
     """
-    all_files = glob.glob(f"{path}/*.dat")
-    for filename in all_files:
-        airfoilname = filename.replace(path, "") \
-            .replace("\\", "") \
-            .replace("/", "") \
-            .replace(".dat", "")\
-            .replace(" ", "")
+    df = pd.read_csv(f"{filename}")
+    names = df["name"].unique()
 
+    for name in names:
         try:
-            df = pd.read_csv(filename, delim_whitespace=True, header=None, skiprows=1)
+            df = pd.read_csv(f"{path}/{name}.dat", delim_whitespace=True, header=None, skiprows=1)
             df.columns = ["x", "y"]
 
             val = df.loc[0, "x"]
             val = int(round(val, 0))
             if val == 1:
-                typer.secho(f"Using Selig format for airfoil {airfoilname}", fg=typer.colors.CYAN)
+                typer.secho(f"Using Selig format for airfoil {name}", fg=typer.colors.CYAN)
             else:
                 first_idx = df.loc[df.x == int(round(1, 0))].index.values
                 first_half = df.iloc[:first_idx[0] + 1]
@@ -81,19 +83,21 @@ def generate(
                 # Reverse rows from first_half
                 first_half = first_half.loc[::-1]
                 df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
-                typer.secho(f"Using Lednicer format for airfoil {airfoilname}", fg=typer.colors.CYAN)
+                typer.secho(f"Using Lednicer format for airfoil {name}", fg=typer.colors.CYAN)
 
-            typer.secho(f"Rendering {kind} airfoil {airfoilname}", fg=typer.colors.CYAN)
+            typer.secho(f"Rendering {kind} airfoil {name}", fg=typer.colors.CYAN)
             start = time.time()
+            airfoil_name = name.replace(" ", "")
+
             if kind != "mesh":
-                rendering(airfoilname, df.to_dict("records"), resolution, kind, angle_start, angle_stop, re, ma)
+                rendering(airfoil_name, df.to_dict("records"), resolution, kind, angle_start, angle_stop, re, ma)
             elif kind == "mesh":
-                meshing(airfoilname, df.to_numpy(), kind, angle_start, angle_stop, re, ma)
+                meshing(airfoil_name, df.to_numpy(), kind, angle_start, angle_stop, re, ma)
             else:
                 typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
                 typer.Abort()
 
-            typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s", fg=typer.colors.GREEN)
+            typer.secho(f"Rendering done. Took {round(time.time() - start, 1)} s\n", fg=typer.colors.GREEN)
 
         except FileNotFoundError as err:
             typer.secho(f"{err}", fg=typer.colors.RED)
