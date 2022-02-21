@@ -1,3 +1,4 @@
+import os
 import glob
 import time
 import typer
@@ -31,7 +32,13 @@ def get(
         payload.append(df)
 
     dt = pd.concat(payload, axis=0)
-    dt.to_csv("out.csv", index=False)
+    filename = "out.csv"
+    files_present = glob.glob(filename)
+
+    if len(files_present) != 0:
+        os.remove(filename)
+
+    dt.to_csv(filename, index=False)
     typer.secho(f"Successfully save data. Took {time.time() - start} s", fg=typer.colors.GREEN)
 
 
@@ -41,7 +48,8 @@ def _process(path, filename, kind):
         .replace("/", "")
 
     split = file.split("_")
-    name = split[0].replace(" ", "")
+    dat_name = split[0]
+    name = dat_name.replace(" ", "")
     re = split[2].replace("Re", "")
     re = int(float(re) * 10 ** 6)
     ma = split[3].replace("M", "")
@@ -56,7 +64,7 @@ def _process(path, filename, kind):
     )
 
     df = df[["alpha", "cl", "cd", "cm"]]
-    df["name"] = name
+    df["name"] = dat_name
     df["re"] = re
     df["ma"] = ma
     df["img"] = df.apply(lambda row: f"{image}_{int(row['alpha'])}.jpg", axis=1)
