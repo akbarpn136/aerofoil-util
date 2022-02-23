@@ -1,6 +1,8 @@
+import os
 import cv2
 import skfmm
 import numpy as np
+import pandas as pd
 
 
 def rotating(draw, angle):
@@ -18,7 +20,7 @@ def rotating(draw, angle):
 
 
 def rendering(name, angle, points, resolution, kind, re, ma):
-    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
+    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.csv"
     dimension = 2  # Image has 2 dimensions shape
     padding = 110
     offset_y = resolution // 2
@@ -44,4 +46,5 @@ def rendering(name, angle, points, resolution, kind, re, ma):
     if kind == "sdf":
         phi = skfmm.distance(phi, dx=1, order=2)
 
-    return phi
+    df = pd.DataFrame(phi)
+    df.to_csv(f".out/{airfoil_image_name}", index=False, header=False)
