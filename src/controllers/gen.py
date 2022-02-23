@@ -1,9 +1,11 @@
 import os
 import typer
 import itertools
+import numpy as np
 import pandas as pd
-from mpire import WorkerPool
-from multiprocessing import cpu_count
+from tqdm import tqdm
+from matplotlib import pyplot as plt
+from multiprocessing import Pool, cpu_count
 
 from . import app
 from services.mesh import meshing
@@ -81,13 +83,36 @@ def generate(
         typer.secho("Creating new folder", fg=typer.colors.YELLOW)
         os.makedirs(path)
 
-    typer.secho(f"Generating airfoil image. It may take time ⏳", fg=typer.colors.CYAN)
+    typer.secho(f"Generating airfoil image. It might take time ⏳", fg=typer.colors.CYAN)
 
-    with WorkerPool(n_jobs=cpu_count()) as pool:
-        pool.map(to_img, paramlist, progress_bar=True)
+    with Pool(processes=cpu_count()) as pool:
+        results = [x for x in tqdm(pool.imap(to_img, paramlist),
+                                   total=len(paramlist))]
+        results = np.array(results)
+
+        for i in tqdm(range(results.shape[0])):
+            fig, ax = plt.subplots()
+            plt.margins(x=0, y=0)
+            plt.axis("off")
+            ax.set_box_aspect(1)
+            plt.tight_layout()
+
+            if kind == "binary":
+                colormap = "gray"
+            elif kind == "sdf":
+                colormap = "jet"
+            else:
+                colormap = "gray"
+
+            plt.imshow(results[i], cmap=plt.get_cmap(colormap))
+
+            plt.savefig(f"out/coba{i}.jpg", bbox_inches="tight", pad_inches=0, dpi=34.7)
+            plt.close("all")
+
+    typer.secho("Rendering done.", fg=typer.colors.GREEN)
 
 
-def to_img(*payload):
+def to_img(payload):
     name = payload[0]
     angle = payload[1]
     resolution = payload[2]
