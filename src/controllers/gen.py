@@ -1,11 +1,13 @@
 import os
+import glob
 import typer
+import shutil
 import itertools
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from mpire import WorkerPool
 from matplotlib import pyplot as plt
-from multiprocessing import Pool, cpu_count
+from multiprocessing import cpu_count
 
 from . import app
 from services.mesh import meshing
@@ -71,11 +73,11 @@ def generate(
     names = df["name"].unique()
     angles = range(angle_start, angle_stop + 1)
     resolution = [resolution]
-    kind = [kind]
+    knd = [kind]
     re = [re]
     ma = [ma]
     path = [path]
-    paramlist = list(itertools.product(names, angles, resolution, kind, re, ma, path))
+    paramlist = list(itertools.product(names, angles, resolution, knd, re, ma, path))
     path = "out"
     isExist = os.path.exists(path)
 
@@ -83,36 +85,44 @@ def generate(
         typer.secho("Creating new folder", fg=typer.colors.YELLOW)
         os.makedirs(path)
 
-    typer.secho(f"Generating airfoil image. It might take time ⏳", fg=typer.colors.CYAN)
+    pth = ".out"
+    isExist = os.path.exists(pth)
 
-    with Pool(processes=cpu_count()) as pool:
-        results = [x for x in tqdm(pool.imap(to_img, paramlist),
-                                   total=len(paramlist))]
-        results = np.array(results)
+    if not isExist:
+        os.makedirs(pth)
 
-        for i in tqdm(range(results.shape[0])):
-            fig, ax = plt.subplots()
-            plt.margins(x=0, y=0)
-            plt.axis("off")
-            ax.set_box_aspect(1)
-            plt.tight_layout()
+    typer.secho(f"Rendering airfoil image. It might take time ⏳", fg=typer.colors.CYAN)
 
-            if kind == "binary":
-                colormap = "gray"
-            elif kind == "sdf":
-                colormap = "jet"
-            else:
-                colormap = "gray"
+    with WorkerPool(n_jobs=cpu_count()) as pool:
+        pool.map(to_img, paramlist, progress_bar=True)
 
-            plt.imshow(results[i], cmap=plt.get_cmap(colormap))
+    tmps = glob.glob(f"{pth}/*.csv")
+    for i in tqdm(range(len(tmps))):
+        name = tmps[i].replace(".csv", "").replace(".out", "").replace("\\", "").replace("/", "")
+        df = pd.read_csv(f".out/{name}.csv", header=None)
+        fig, ax = plt.subplots()
+        plt.margins(x=0, y=0)
+        plt.axis("off")
+        ax.set_box_aspect(1)
+        plt.tight_layout()
 
-            plt.savefig(f"out/coba{i}.jpg", bbox_inches="tight", pad_inches=0, dpi=34.7)
-            plt.close("all")
+        if kind == "binary":
+            colormap = "gray"
+        elif kind == "sdf":
+            colormap = "jet"
+        else:
+            colormap = "gray"
 
+        plt.imshow(df.to_numpy(), cmap=plt.get_cmap(colormap))
+
+        plt.savefig(f"{path}/{name.replace(' ', '')}.jpg", bbox_inches="tight", pad_inches=0, dpi=34.7)
+        plt.close("all")
+
+    shutil.rmtree(pth)
     typer.secho("Rendering done.", fg=typer.colors.GREEN)
 
 
-def to_img(payload):
+def to_img(*payload):
     name = payload[0]
     angle = payload[1]
     resolution = payload[2]
@@ -136,7 +146,6 @@ def to_img(payload):
             first_half = first_half.loc[::-1]
             df = pd.concat([first_half, second_half], axis=0, ignore_index=True)
 
-        airfoil_name = name.replace(" ", "")
         if kind != "mesh":
             rendering(name, angle, df.to_dict("records"), resolution, kind, re, ma)
         elif kind == "mesh":
@@ -144,6 +153,7 @@ def to_img(payload):
         else:
             typer.secho("Invalid kind. Only binary, mesh or sdf available.", fg=typer.colors.RED)
             typer.Abort()
+
     except FileNotFoundError as err:
         typer.secho(f"{err}", fg=typer.colors.RED)
 
