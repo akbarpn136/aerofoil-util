@@ -1,12 +1,6 @@
-import os
 import cv2
-import glob
 import skfmm
-import typer
 import numpy as np
-from functools import partial
-from matplotlib import pyplot as plt
-from multiprocessing import Pool, cpu_count
 
 
 def rotating(draw, angle):
@@ -47,21 +41,7 @@ def rendering(name, angle, points, resolution, kind, re, ma):
     phi = cv2.copyMakeBorder(phi, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=[-1, -1, -1])
     phi = rotating(phi, angle)
 
-    fig, ax = plt.subplots()
-    plt.margins(x=0, y=0)
-    plt.axis("off")
-    ax.set_box_aspect(1)
-    plt.tight_layout()
-
-    if kind == "binary":
-        colormap = "gray"
-    elif kind == "sdf":
-        colormap = "jet"
+    if kind == "sdf":
         phi = skfmm.distance(phi, dx=1, order=2)
-    else:
-        colormap = "gray"
 
-    plt.imshow(phi, cmap=plt.get_cmap(colormap))
-
-    plt.savefig(f"out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
-    plt.close("all")
+    return phi
