@@ -2,7 +2,44 @@ import os
 import itertools
 import pandas as pd
 from mpire import WorkerPool
-from src.controllers.gen import to_img
+
+from src.services.mesh import meshing
+from src.services.image import rendering
+
+
+def to_img(*payload):
+    name = payload[0]
+    angle = payload[1]
+    resol = payload[2]
+    kn = payload[3]
+    rey = payload[4]
+    mac = payload[5]
+    pat = payload[6]
+
+    try:
+        ddf = pd.read_csv(f"{pat}/{name}.dat", delim_whitespace=True, header=None, skiprows=1)
+        ddf.columns = ["x", "y"]
+
+        val = ddf.loc[0, "x"]
+        val = int(round(val, 0))
+        if val != 1:
+            first_idx = ddf.loc[ddf.x == int(round(1, 0))].index.values
+            first_half = ddf.iloc[:first_idx[0] + 1]
+            second_half = ddf.iloc[first_idx[0] + 2:]
+
+            # Reverse rows from first_half
+            first_half = first_half.loc[::-1]
+            ddf = pd.concat([first_half, second_half], axis=0, ignore_index=True)
+
+        if kn != "mesh":
+            rendering(name, angle, ddf.to_dict("records"), resol, kn, rey, mac)
+        elif kn == "mesh":
+            meshing(name, angle, ddf.to_numpy(), kn, rey, mac)
+        else:
+            print("Invalid kind. Only binary, mesh or sdf available.")
+
+    except FileNotFoundError as err:
+        print(f"{err}")
 
 
 if __name__ == "__main__":
