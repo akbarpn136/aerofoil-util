@@ -20,7 +20,7 @@ def rotating(draw, angle):
 
 
 def rendering(name, angle, points, resolution, kind, re, ma):
-    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.csv"
+    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}"
     dimension = 2  # Image has 2 dimensions shape
     padding = 110
     offset_y = resolution // 2
