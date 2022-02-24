@@ -49,5 +49,5 @@ def rendering(name, angle, points, resolution, kind, re, ma):
     fig.tight_layout()
     ax.imshow(phi, cmap=plt.get_cmap("jet"))
     ax.axes.axis('off')
-    fig.savefig(f"out/{airfoil_image_name.replace(' ', '')}.jpg", bbox_inches="tight", pad_inches=0, dpi=34.7)
+    fig.savefig(f"../out/{airfoil_image_name.replace(' ', '')}.jpg", bbox_inches="tight", pad_inches=0, dpi=34.7)
     plt.close(fig)
