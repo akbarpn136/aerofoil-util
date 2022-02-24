@@ -1,8 +1,8 @@
-import os
 import cv2
 import skfmm
 import numpy as np
 import pandas as pd
+from plotly import express as px
 
 
 def rotating(draw, angle):
@@ -46,5 +46,12 @@ def rendering(name, angle, points, resolution, kind, re, ma):
     if kind == "sdf":
         phi = skfmm.distance(phi, dx=1, order=2)
 
-    df = pd.DataFrame(phi)
-    df.to_csv(f".out/{airfoil_image_name}", index=False, header=False)
+    fig = px.imshow(phi, color_continuous_scale="turbo")
+    fig.update_xaxes(showticklabels=False)
+    fig.update_yaxes(showticklabels=False)
+    fig.update_layout(
+        coloraxis_showscale=False,
+        margin=dict(t=0, b=0, l=0, r=0),
+        width=128, height=128
+    )
+    fig.write_image(f"out/{airfoil_image_name.replace(' ', '')}.jpg")

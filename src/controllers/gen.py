@@ -85,40 +85,11 @@ def generate(
         typer.secho("Creating new folder", fg=typer.colors.YELLOW)
         os.makedirs(path)
 
-    pth = ".out"
-    isExist = os.path.exists(pth)
-
-    if not isExist:
-        os.makedirs(pth)
-
     typer.secho(f"Rendering airfoil image. It might take time ⏳", fg=typer.colors.CYAN)
 
     with WorkerPool(n_jobs=cpu_count()) as pool:
         pool.map(to_img, paramlist, progress_bar=True)
 
-    tmps = glob.glob(f"{pth}/*.csv")
-    for i in tqdm(range(len(tmps))):
-        name = tmps[i].replace(".csv", "").replace(".out", "").replace("\\", "").replace("/", "")
-        df = pd.read_csv(f".out/{name}.csv", header=None)
-        fig, ax = plt.subplots()
-        plt.margins(x=0, y=0)
-        plt.axis("off")
-        ax.set_box_aspect(1)
-        plt.tight_layout()
-
-        if kind == "binary":
-            colormap = "gray"
-        elif kind == "sdf":
-            colormap = "jet"
-        else:
-            colormap = "gray"
-
-        plt.imshow(df.to_numpy(), cmap=plt.get_cmap(colormap))
-
-        plt.savefig(f"{path}/{name.replace(' ', '')}.jpg", bbox_inches="tight", pad_inches=0, dpi=34.7)
-        plt.close("all")
-
-    shutil.rmtree(pth)
     typer.secho("Rendering done.", fg=typer.colors.GREEN)
 
 
