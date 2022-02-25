@@ -43,7 +43,7 @@ if __name__ == "__main__":
     pred_nama = pred["name"].unique()[0]
 
     aktual = pd.read_csv("../out.csv")
-    aktual = aktual.loc[aktual["name"] == pred_nama]
+    aktual = aktual.loc[aktual["name"].str.replace(" ", "") == pred_nama]
     aktual = aktual[["alpha", "cl", "cd", "cm"]]
     aktual = aktual.sort_values("alpha")
 
