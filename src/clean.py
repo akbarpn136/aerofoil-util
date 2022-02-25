@@ -16,23 +16,24 @@ def _rename(*payload):
 
 
 if __name__ == "__main__":
-    filename = "../out.csv"
+    path = "../out"
+    tmp = "../tmp"
+    filename = f"{path}.csv"
     df = pd.read_csv(f"{filename}")
     images = df["img"].tolist()
-    path = "../out"
-    isExist = os.path.exists("../tmp")
+    isExist = os.path.exists(tmp)
     paramlist = list(itertools.product([path], images))
 
     if not isExist:
-        os.makedirs("../tmp")
+        os.makedirs(tmp)
 
     print("Clean unused airfoil images")
     with WorkerPool(n_jobs=os.cpu_count()) as pool:
         pool.map(_rename, paramlist, progress_bar=True)
 
         try:
-            shutil.rmtree("../out")
-            os.rename("../tmp", f"{path}")
+            shutil.rmtree(path)
+            os.rename(tmp, f"{path}")
         except FileNotFoundError:
             pass
         except OSError:
