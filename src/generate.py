@@ -50,8 +50,8 @@ if __name__ == "__main__":
     ma = 0.0
     re = 500000
     resolution = 1024
-    angle_start = -14
-    angle_stop = 14
+    angle_start = -20
+    angle_stop = 20
 
     df = pd.read_csv(f"{filename}")
     names = df["name"].unique()
