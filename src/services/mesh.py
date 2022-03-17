@@ -1,11 +1,7 @@
-import os
-import glob
-import typer
 import pygmsh
+import matplotlib
 import numpy as np
-from functools import partial
 from matplotlib import pyplot as plt
-from multiprocessing import Pool, cpu_count
 
 
 def rotate_around(pts, radians, origin=(0, 0)):
@@ -49,13 +45,13 @@ def meshing(name, angle, points, kind, re, ma):
         y = mesh.points[:, 1]
         tri = mesh.cells[1].data
 
+        matplotlib.use("Agg")
         plt.style.use("dark_background")
-        _, ax = plt.subplots()
-        plt.triplot(x, y, tri, color="white")
-        plt.margins(x=0, y=0)
-        plt.axis("off")
-        ax.set_box_aspect(1)
-        plt.tight_layout()
-        plt.savefig("naca.jpg", bbox_inches="tight", pad_inches=0)
-        plt.savefig(f"out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
-        plt.close("all")
+        fig, ax = plt.subplots()
+        fig.tight_layout()
+        ax.triplot(x, y, tri, color="white")
+        ax.axes.axis("off")
+        ax.axes.margins(x=0, y=0)
+        ax.axes.set_box_aspect(1)
+        fig.savefig(f"../out/{airfoil_image_name.replace(' ', '')}", bbox_inches="tight", pad_inches=0)
+        plt.close(fig)
