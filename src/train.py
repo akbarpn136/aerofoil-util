@@ -8,8 +8,8 @@ from services.arch import AerofoilNN
 from services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
-    batch_size = 29
-    num_epochs = 100
+    batch_size = 41
+    num_epochs = 500
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
