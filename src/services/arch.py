@@ -71,7 +71,7 @@ class AerofoilNN(nn.Module):
             loss_sum_validation = 0
 
             self.train()
-            for _, (images, labels) in enumerate(tqdm(train_loader, desc="Training step", file=sys.stdout)):
+            for _, (images, labels) in enumerate(tqdm(train_loader, desc="Train step", file=sys.stdout)):
                 images = images.to(device)
                 labels = labels.to(device)
 
@@ -86,7 +86,7 @@ class AerofoilNN(nn.Module):
             self.lossList.append(loss_sum_train)
 
             self.eval()
-            for _, (images, labels) in enumerate(tqdm(valid_loader, desc="Validation step", file=sys.stdout)):
+            for _, (images, labels) in enumerate(tqdm(valid_loader, desc="Valid step", file=sys.stdout)):
                 images = images.to(device)
                 labels = labels.to(device)
                 output_valid = self(images)
