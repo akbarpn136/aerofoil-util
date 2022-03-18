@@ -1,4 +1,7 @@
 import sys
+
+import numpy as np
+import pandas as pd
 from torch import nn
 from tqdm import tqdm
 
@@ -98,3 +101,7 @@ class AerofoilNN(nn.Module):
             print(
                 f"Epoch {epoch + 1}/{epochs}: Train Loss: {loss_sum_train} | Validation Loss: {loss_sum_validation}\n"
             )
+
+        combine = np.vstack((self.lossList, self.valid_lossList)).T
+        df = pd.DataFrame(combine, columns=["train_loss", "valid_loss"])
+        df.to_csv("../train.csv")
