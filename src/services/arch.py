@@ -1,5 +1,5 @@
 import sys
-
+import torch
 import numpy as np
 import pandas as pd
 from torch import nn
@@ -7,14 +7,15 @@ from tqdm import tqdm
 
 
 class AerofoilNN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_channel=3):
         super(AerofoilNN, self).__init__()
+        torch.manual_seed(2022)
 
         self.lossList = []
         self.valid_lossList = []
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 10, 13),
+            nn.Conv2d(num_channel, 10, 13),
             nn.BatchNorm2d(10),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
