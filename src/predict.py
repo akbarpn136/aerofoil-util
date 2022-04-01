@@ -8,13 +8,13 @@ from torchvision.transforms import transforms
 from src.services.arch import AerofoilNN
 
 if __name__ == "__main__":
-    airfoilname = "NACA1014"
+    airfoilname = "NACA2024"
     kind = "sdf"
     all_files = glob.glob(f"../out/{airfoilname}_{kind}*.jpg")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = AerofoilNN().to(dev)
     model.load_state_dict(
-        torch.load("../aerocnn.pt", map_location=dev)
+        torch.load("../aerofoil_sdf_4Conv_BN_2FC.pt", map_location=dev)
     )
     model.eval()
 
