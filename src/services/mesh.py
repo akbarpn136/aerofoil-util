@@ -16,7 +16,7 @@ def rotate_around(pts, radians, origin=(0, 0)):
     return res
 
 
-def meshing(name, angle, points, kind, re, ma):
+def meshing_unstructured(name, angle, points, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
 
     with pygmsh.geo.Geometry() as geom:
@@ -55,3 +55,7 @@ def meshing(name, angle, points, kind, re, ma):
         ax.axes.set_box_aspect(1)
         fig.savefig(f"../out/{airfoil_image_name.replace(' ', '')}", bbox_inches="tight", pad_inches=0)
         plt.close(fig)
+
+
+def meshing_ogrid(name, angle, points, kind, re, ma):
+    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
