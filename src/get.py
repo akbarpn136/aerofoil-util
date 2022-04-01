@@ -1,7 +1,6 @@
 import os
 import glob
 import itertools
-
 import pandas as pd
 from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
