@@ -4,7 +4,7 @@ import pandas as pd
 from mpire import WorkerPool
 
 from src.services.mesh import meshing_ogrid, meshing_unstructured
-from src.services.image import rendering
+from src.services.image import rendering_sdf, rendering_binary
 
 
 def to_img(*payload):
@@ -32,7 +32,11 @@ def to_img(*payload):
             ddf = pd.concat([first_half, second_half], axis=0, ignore_index=True)
 
         if kn != "mesh":
-            rendering(name, angle, ddf.to_dict("records"), resol, kn, rey, mac)
+            if kn == "sdf":
+                rendering_sdf(name, angle, ddf.to_dict("records"), resol, kn, rey, mac)
+            else:
+                rendering_binary(name, angle, ddf.to_numpy(), kn, rey, mac)
+
         elif kn == "mesh":
             meshing_ogrid(name, angle, ddf.to_numpy(), kn, rey, mac)
         else:
@@ -43,7 +47,7 @@ def to_img(*payload):
 
 
 if __name__ == "__main__":
-    kind = "mesh"
+    kind = "binary"
     path = "../out"
     foil = "../foil"
     filename = "../out.csv"
