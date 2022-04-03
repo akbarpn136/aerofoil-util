@@ -1,7 +1,6 @@
 import os
 import glob
 import itertools
-
 import pandas as pd
 from tqdm import tqdm
 from multiprocessing import Pool, cpu_count
@@ -41,7 +40,7 @@ def _process(payload):
 
 
 if __name__ == "__main__":
-    kind = "sdf"
+    kind = "mesh"
     path = "../aero"
     filename = "../out.csv"
     aeros = glob.glob(f"{path}/*.txt")

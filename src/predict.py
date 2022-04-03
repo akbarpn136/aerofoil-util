@@ -8,13 +8,14 @@ from torchvision.transforms import transforms
 from src.services.arch import AerofoilNN
 
 if __name__ == "__main__":
-    airfoilname = "NACA1014"
-    kind = "sdf"
+    airfoilname = "NACA2024"
+    kind = "mesh"
+    num_channel = 1
     all_files = glob.glob(f"../out/{airfoilname}_{kind}*.jpg")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = AerofoilNN().to(dev)
+    model = AerofoilNN(num_channel=num_channel).to(dev)
     model.load_state_dict(
-        torch.load("../aerocnn.pt", map_location=dev)
+        torch.load("../aerofoil_mesh_4Conv_BN_2FC.pt", map_location=dev)
     )
     model.eval()
 
@@ -25,10 +26,16 @@ if __name__ == "__main__":
         angle = int(angle)
         img = Image.open(filename)
 
+        if num_channel == 3:
+            img = img.convert("RGB")
+        else:
+            img = img.convert("L")
+
         transform = transforms.Compose([
             transforms.Resize(128),
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
+            else transforms.Normalize((0.5,), (0.5,))
         ])
 
         img = transform(img).unsqueeze(0)

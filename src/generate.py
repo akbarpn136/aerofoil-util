@@ -3,7 +3,7 @@ import itertools
 import pandas as pd
 from mpire import WorkerPool
 
-from src.services.mesh import meshing
+from src.services.mesh import meshing_ogrid, meshing_unstructured
 from src.services.image import rendering
 
 
@@ -34,7 +34,7 @@ def to_img(*payload):
         if kn != "mesh":
             rendering(name, angle, ddf.to_dict("records"), resol, kn, rey, mac)
         elif kn == "mesh":
-            meshing(name, angle, ddf.to_numpy(), kn, rey, mac)
+            meshing_ogrid(name, angle, ddf.to_numpy(), kn, rey, mac)
         else:
             print("Invalid kind. Only binary, mesh or sdf available.")
 
@@ -43,7 +43,7 @@ def to_img(*payload):
 
 
 if __name__ == "__main__":
-    kind = "sdf"
+    kind = "mesh"
     path = "../out"
     foil = "../foil"
     filename = "../out.csv"
