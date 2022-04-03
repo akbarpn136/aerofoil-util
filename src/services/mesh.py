@@ -78,6 +78,11 @@ def coord(a, b, xi):
 
 def meshing_ogrid(name, angle, points, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
+    points = rotate_around(
+        points,
+        np.radians(angle),
+        origin=np.mean(points, axis=0)
+    )
 
     # --- outer circle, north boundary ------
     R = 1.25
