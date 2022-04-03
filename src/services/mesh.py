@@ -20,27 +20,15 @@ def rotate_around(pts, radians, origin=(0, 0)):
 
 def meshing_unstructured(name, angle, points, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
+    airfoil_image_name = airfoil_image_name.replace(" ", "")
 
     with pygmsh.geo.Geometry() as geom:
         hole = geom.add_polygon(
-            rotate_around(
-                points,
-                np.radians(angle),
-                origin=np.mean(points, axis=0)
-            ),
+            points,
             make_surface=False
         )
 
-        geom.add_polygon(
-            [
-                [-0.1, 0.6],
-                [-0.1, -0.6],
-                [1.1, -0.6],
-                [1.1, 0.6],
-            ],
-            mesh_size=0.1,
-            holes=[hole.curve_loop]
-        )
+        geom.add_circle(np.mean(points, axis=0), 1.0, mesh_size=0.3, holes=[hole.curve_loop])
 
         mesh = geom.generate_mesh()
         x = mesh.points[:, 0]
@@ -51,12 +39,18 @@ def meshing_unstructured(name, angle, points, kind, re, ma):
         plt.style.use("dark_background")
         fig, ax = plt.subplots()
         fig.tight_layout()
-        ax.triplot(x, y, tri, color="white")
+        Cmap = np.ones(len(tri))
+        ax.tripcolor(x, y, tri, facecolors=Cmap, edgecolors="#4E4E4E", cmap=mclr.ListedColormap(["white", "white"]))
         ax.axes.axis("off")
         ax.axes.margins(x=0, y=0)
         ax.axes.set_box_aspect(1)
         fig.savefig(f"../out/{airfoil_image_name.replace(' ', '')}", bbox_inches="tight", pad_inches=0)
         plt.close(fig)
+
+        img = Image.open(f"../out/{airfoil_image_name}")
+        img = img.rotate(-1 * angle)
+        img = img.resize((146, 146))
+        img.save(f"../out/{airfoil_image_name}")
 
 
 def scale01(z):  # --- transform z to [0 ..1]
@@ -79,12 +73,7 @@ def coord(a, b, xi):
 
 def meshing_ogrid(name, angle, points, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
-    airfoil_image_name = airfoil_image_name.replace(' ', '')
-    # points = rotate_around(
-    #     points,
-    #     np.radians(angle),
-    #     origin=np.mean(points, axis=0)
-    # )
+    airfoil_image_name = airfoil_image_name.replace(" ", "")
 
     # --- outer circle, north boundary ------
     R = 1.25
@@ -93,7 +82,6 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
     nn = px.size
     cx = np.mean(px)
     cy = np.mean(py)
-    # phi = np.linspace(0.02,1.98*np.pi, nn) #for demonstration only, (0.0,2.0*np.pi, nn) else
     phi = np.linspace(0.0, 2.0 * np.pi, nn)
     Rtx = R * np.cos(phi) + cx
     Rty = R * np.sin(phi) + cy
