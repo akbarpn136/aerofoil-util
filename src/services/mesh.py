@@ -1,3 +1,4 @@
+from PIL import Image
 import pygmsh
 import matplotlib
 import numpy as np
@@ -78,11 +79,12 @@ def coord(a, b, xi):
 
 def meshing_ogrid(name, angle, points, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
-    points = rotate_around(
-        points,
-        np.radians(angle),
-        origin=np.mean(points, axis=0)
-    )
+    airfoil_image_name = airfoil_image_name.replace(' ', '')
+    # points = rotate_around(
+    #     points,
+    #     np.radians(angle),
+    #     origin=np.mean(points, axis=0)
+    # )
 
     # --- outer circle, north boundary ------
     R = 1.25
@@ -119,5 +121,10 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
     ax.axes.axis("off")
     ax.axes.margins(x=0, y=0)
     ax.axes.set_box_aspect(1)
-    fig.savefig(f"../out/{airfoil_image_name.replace(' ', '')}", bbox_inches="tight", pad_inches=0)
+    fig.savefig(f"../out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
     plt.close(fig)
+
+    img = Image.open(f"../out/{airfoil_image_name}")
+    img = img.rotate(-1 * angle)
+    img = img.resize((146, 146))
+    img.save(f"../out/{airfoil_image_name}")
