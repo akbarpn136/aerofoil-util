@@ -61,7 +61,8 @@ if __name__ == "__main__":
     fig.tight_layout(pad=4.0)
     fig_score.tight_layout(pad=4.0)
 
-    plt.suptitle(pred_nama, fontsize=14)
+    fig.suptitle(pred_nama, fontsize=14)
+    fig_score.suptitle(pred_nama, fontsize=14)
 
     plotting(
         ax1, "Cl - Alpha", "alpha", "Cl",
