@@ -9,13 +9,13 @@ from src.services.arch import AerofoilNN
 
 if __name__ == "__main__":
     airfoilname = "NACA2024"
-    kind = "binary"
+    kind = "mesh"
     num_channel = 1
     all_files = glob.glob(f"../out/{airfoilname}_{kind}*.jpg")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = AerofoilNN(num_channel=num_channel).to(dev)
     model.load_state_dict(
-        torch.load("../aerofoil_binary_4Conv_BN_2FC.pt", map_location=dev)
+        torch.load("../aerofoil_mesh_4Conv_BN_2FC.pt", map_location=dev)
     )
     model.eval()
 
