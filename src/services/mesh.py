@@ -1,8 +1,7 @@
-from PIL import Image
 import pygmsh
 import matplotlib
 import numpy as np
-import matplotlib.colors as mclr
+from PIL import Image
 from matplotlib import pyplot as plt
 
 
@@ -28,7 +27,7 @@ def meshing_unstructured(name, angle, points, kind, re, ma):
             make_surface=False
         )
 
-        geom.add_circle(np.mean(points, axis=0), 1.0, mesh_size=0.3, holes=[hole.curve_loop])
+        geom.add_circle(np.mean(points, axis=0), 1.0, mesh_size=0.25, holes=[hole.curve_loop])
 
         mesh = geom.generate_mesh()
         x = mesh.points[:, 0]
@@ -39,8 +38,8 @@ def meshing_unstructured(name, angle, points, kind, re, ma):
         plt.style.use("dark_background")
         fig, ax = plt.subplots()
         fig.tight_layout()
-        Cmap = np.ones(len(tri))
-        ax.tripcolor(x, y, tri, facecolors=Cmap, edgecolors="#4E4E4E", cmap=mclr.ListedColormap(["white", "white"]))
+        Cmap = np.linspace(0, 1, len(tri))
+        ax.tripcolor(x, y, tri, facecolors=Cmap, edgecolors="#4E4E4E", cmap=plt.get_cmap("jet"))
         ax.axes.axis("off")
         ax.axes.margins(x=0, y=0)
         ax.axes.set_box_aspect(1)
@@ -104,8 +103,7 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
     plt.style.use("dark_background")
     fig, ax = plt.subplots()
     fig.tight_layout()
-    Cmap = mclr.ListedColormap(["white", "white"])
-    ax.pcolormesh(xk, yk, np.zeros_like(xk), edgecolors="#4E4E4E", linewidths=0.1, cmap=Cmap)
+    ax.pcolormesh(xk, yk, xk, edgecolors="#4E4E4E", linewidths=0.1, cmap=plt.get_cmap("jet"))
     ax.axes.axis("off")
     ax.axes.margins(x=0, y=0)
     ax.axes.set_box_aspect(1)
