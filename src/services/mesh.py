@@ -100,7 +100,7 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
         yk[t, :] = coord(py[t], Rty[t], yEta)
 
     matplotlib.use("Agg")
-    plt.style.use("dark_background")
+    # plt.style.use("dark_background")
     fig, ax = plt.subplots()
     fig.tight_layout()
     ax.pcolormesh(xk, yk, xk, edgecolors="#4E4E4E", linewidths=0.1, cmap=plt.get_cmap("jet"))
@@ -112,5 +112,5 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
 
     img = Image.open(f"../out/{airfoil_image_name}")
     img = img.rotate(-1 * angle)
-    img = img.resize((146, 146))
+    img = img.crop((60, 60, 340, 340))
     img.save(f"../out/{airfoil_image_name}")
