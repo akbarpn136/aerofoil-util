@@ -103,7 +103,7 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
     # plt.style.use("dark_background")
     fig, ax = plt.subplots()
     fig.tight_layout()
-    ax.pcolormesh(xk, yk, xk, edgecolors="#4E4E4E", linewidths=0.1, cmap=plt.get_cmap("jet"))
+    ax.pcolormesh(xk, yk, xk, edgecolors=None, linewidths=0.1, cmap=plt.get_cmap("jet"))
     ax.axes.axis("off")
     ax.axes.margins(x=0, y=0)
     ax.axes.set_box_aspect(1)
