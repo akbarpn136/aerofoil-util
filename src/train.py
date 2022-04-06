@@ -4,7 +4,7 @@ from torchvision import transforms
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
-from services.arch.conv4bndo2fc import Aerofoil4BNDO2FC
+from services.arch.conv4bn2fc import Aerofoil4BN2FC
 from services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     valid_loader = DataLoader(dataset=valid_dataset, batch_size=batch_size, shuffle=True)
 
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = Aerofoil4BNDO2FC(num_channel=num_channel).to(dev)
+    model = Aerofoil4BN2FC(num_channel=num_channel).to(dev)
     loss_func = nn.MSELoss()
     optim = torch.optim.Adam(model.parameters(), learning_rate)
 
