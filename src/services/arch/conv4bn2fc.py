@@ -10,6 +10,7 @@ class Aerofoil4BN2FC(AerofoilBaseNN):
         self.conv1 = nn.Sequential(
             nn.Conv2d(num_channel, 10, 15, 1, 1),
             nn.BatchNorm2d(10),
+            nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
