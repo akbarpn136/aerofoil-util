@@ -38,7 +38,7 @@ def to_img(*payload):
                 rendering_binary(name, angle, ddf.to_numpy(), kn, rey, mac)
 
         elif kn == "mesh":
-            meshing_unstructured(name, angle, ddf.to_numpy(), kn, rey, mac)
+            meshing_ogrid(name, angle, ddf.to_numpy(), kn, rey, mac)
         else:
             print("Invalid kind. Only binary, mesh or sdf available.")
 
