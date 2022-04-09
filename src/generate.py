@@ -48,9 +48,9 @@ def to_img(*payload):
 
 if __name__ == "__main__":
     kind = "mesh"
-    path = "../out"
-    foil = "../foil"
-    filename = "../out.csv"
+    path = "out"
+    foil = "foil"
+    filename = "out.csv"
     ma = 0.0
     re = 500000
     resolution = 1024
