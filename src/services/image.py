@@ -53,7 +53,7 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
     fig.tight_layout()
     ax.imshow(phi, cmap=plt.get_cmap(colormap))
     ax.axes.axis("off")
-    fig.savefig(f"../out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
+    fig.savefig(f"out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
 
@@ -71,10 +71,10 @@ def rendering_binary(name, angle, points, kind, re, ma):
     ax.fill(px, py, "white", zorder=10)
     ax.axes.axis("off")
     ax.axes.set_aspect("equal", "datalim")
-    fig.savefig(f"../out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
+    fig.savefig(f"out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
-    img = Image.open(f"../out/{airfoil_image_name}")
+    img = Image.open(f"out/{airfoil_image_name}")
     img = img.rotate(-1 * angle)
     img = img.resize((146, 146))
-    img.save(f"../out/{airfoil_image_name}")
+    img.save(f"out/{airfoil_image_name}")
