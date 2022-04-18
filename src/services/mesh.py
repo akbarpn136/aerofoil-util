@@ -86,7 +86,7 @@ def meshing_ogrid(name, angle, points, kind, re, ma):
     Rty = R * np.sin(phi) + cy
 
     mx = px.size  # number of points in x-direction
-    my = 10  # number of points in y-direction
+    my = 15  # number of points in y-direction
 
     # --- initialize the 2D arrays of coordinates ---------
     xk = np.zeros((mx, my))
