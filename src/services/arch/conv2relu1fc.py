@@ -8,18 +8,18 @@ class Aerofoil2Relu1FC(AerofoilBaseNN):
         super(Aerofoil2Relu1FC, self).__init__()
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(num_channel, 20, 5, 1, 0),
+            nn.Conv2d(num_channel, 40, 5, 1, 0),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(20, 40, 5, 1, 0),
+            nn.Conv2d(40, 80, 5, 1, 0),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
-        self.fc1 = nn.Linear(1000, 3)
+        self.fc1 = nn.Linear(2000, 3)
 
     def forward(self, x):
         f1 = self.conv1(x)
