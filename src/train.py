@@ -9,8 +9,8 @@ from src.services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
     batch_size = 41
-    num_channel = 3
-    num_epochs = 1000
+    num_channel = 1
+    num_epochs = 1600
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
