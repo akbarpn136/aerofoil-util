@@ -17,7 +17,7 @@ if __name__ == '__main__':
         "out.csv",
         "out",
         transform=transforms.Compose([
-            transforms.Resize(32),
+            transforms.Resize(128),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
             else transforms.Normalize((0.5,), (0.5,)),
