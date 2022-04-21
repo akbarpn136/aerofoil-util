@@ -33,7 +33,7 @@ class Aerofoil3BN1FC(AerofoilBaseNN):
     def forward(self, x):
         f1 = self.conv1(x)
         f2 = self.conv2(f1)
-        f3 = self.conv2(f2)
+        f3 = self.conv3(f2)
         f4_flat = f3.view(f3.size(0), -1)
 
         return self.fc1(f4_flat)
