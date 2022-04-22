@@ -3,9 +3,9 @@ from torch import nn
 from src.services.arch.base import AerofoilBaseNN
 
 
-class Aerofoil5BN1FC(AerofoilBaseNN):
+class Aerofoil5BN2FC(AerofoilBaseNN):
     def __init__(self, num_channel=3):
-        super(Aerofoil5BN1FC, self).__init__()
+        super(Aerofoil5BN2FC, self).__init__()
 
         self.conv1 = nn.Sequential(
             nn.Conv2d(num_channel, 16, 3, 1, 1),
