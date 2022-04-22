@@ -4,12 +4,12 @@ from torchvision import transforms
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
-from src.services.arch.conv2relu1fc import Aerofoil2Relu1FC
+from src.services.arch.conv5bn1fc import Aerofoil5BN1FC
 from src.services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
     batch_size = 41
-    num_channel = 1
+    num_channel = 3
     num_epochs = 1600
     learning_rate = 0.00001
 
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     valid_loader = DataLoader(dataset=valid_dataset, batch_size=batch_size, shuffle=True)
 
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = Aerofoil2Relu1FC(num_channel=num_channel).to(dev)
+    model = Aerofoil5BN1FC(num_channel=num_channel).to(dev)
     loss_func = nn.MSELoss()
     optim = torch.optim.Adam(model.parameters(), learning_rate)
 
@@ -40,6 +40,7 @@ if __name__ == '__main__':
     torch.save(model.state_dict(), "aerofoil_mesh_4Conv_BN_2FC.pt")
     plt.plot(model.lossList[1:], label="Train Loss")
     plt.plot(model.valid_lossList[1:], label="Valid Loss")
+    plt.yscale("log")
     plt.xlabel("Epoch")
     plt.ylabel("MSE")
     plt.legend()
