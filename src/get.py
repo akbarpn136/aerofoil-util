@@ -40,7 +40,7 @@ def _process(payload):
 
 
 if __name__ == "__main__":
-    kind = "mesh"
+    kind = "spectro"
     path = "aero"
     filename = "out.csv"
     aeros = glob.glob(f"{path}/*.txt")
