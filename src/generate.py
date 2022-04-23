@@ -4,7 +4,7 @@ import pandas as pd
 from mpire import WorkerPool
 
 from src.services.mesh import meshing_ogrid, meshing_unstructured
-from src.services.image import rendering_sdf, rendering_binary
+from src.services.image import rendering_sdf, rendering_binary, rendering_spectro
 
 
 def to_img(*payload):
@@ -34,6 +34,8 @@ def to_img(*payload):
         if kn != "mesh":
             if kn == "sdf":
                 rendering_sdf(name, angle, ddf.to_dict("records"), resol, kn, rey, mac)
+            elif kn == "spectro":
+                rendering_spectro(name, angle, ddf.to_numpy(), kn, rey, mac)
             else:
                 rendering_binary(name, angle, ddf.to_numpy(), kn, rey, mac)
 
@@ -47,7 +49,7 @@ def to_img(*payload):
 
 
 if __name__ == "__main__":
-    kind = "mesh"
+    kind = "spectro"
     path = "out"
     foil = "foil"
     filename = "out.csv"
