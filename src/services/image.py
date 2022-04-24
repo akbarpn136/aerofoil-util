@@ -110,7 +110,7 @@ def rendering_spectro(name, angle, points, kind, re, ma):
     img = img.resize((146, 146))
     img.save(fl)
 
-    sg = SpectroGraphic(path=fl)
+    sg = SpectroGraphic(path=fl, duration=1, height=35)
     sg.save(wav_file=au)
     Fs, aud = wavfile.read(au)
     fig, ax = plt.subplots(figsize=(10, 10))
