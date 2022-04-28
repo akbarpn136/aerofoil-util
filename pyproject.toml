@@ -10,7 +10,6 @@ aerofoil = "aerofoil.main:app"
 
 [tool.poetry.dependencies]
 python = "~3.9"
-typer = {extras = ["all"], version = "^0.4.0"}
 numpy = "^1.22.2"
 matplotlib = "^3.5.1"
 scipy = "^1.8.0"
