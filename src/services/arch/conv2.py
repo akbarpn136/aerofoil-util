@@ -3,23 +3,30 @@ from torch import nn
 from src.services.arch.base import AerofoilBaseNN
 
 
-class Aerofoil2Relu1FC(AerofoilBaseNN):
+class Aerofoil2Relu2FC(AerofoilBaseNN):
     def __init__(self, num_channel=3):
-        super(Aerofoil2Relu1FC, self).__init__()
+        super(Aerofoil2Relu2FC, self).__init__()
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(num_channel, 40, 5, 1, 0),
-            nn.MaxPool2d(2, 2),
+            nn.Conv2d(num_channel, 32, 50),
             nn.ReLU()
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(40, 80, 5, 1, 0),
-            nn.MaxPool2d(2, 2),
-            nn.ReLU()
+            nn.Conv2d(32, 64, 50),
+            nn.ReLU(),
+            nn.MaxPool2d(5, 5),
+            nn.Dropout2d(0.4)
         )
 
-        self.fc1 = nn.Linear(2000, 3)
+        self.fc1 = nn.Sequential(
+            nn.Linear(64*6*6, 128),
+            nn.ReLU(),
+            nn.Dropout2d(0.4)
+        )
+
+        self.fc2 = nn.Linear(128, 3)
+
 
     def forward(self, x):
         out = self.conv1(x)
