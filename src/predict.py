@@ -5,17 +5,17 @@ import pandas as pd
 from PIL import Image
 from torchvision.transforms import transforms
 
-from src.services.arch import AerofoilNN
+from src.services.arch.conv4bn2fc import Aerofoil4BN2FC
 
 if __name__ == "__main__":
     airfoilname = "NACA2024"
     kind = "mesh"
-    num_channel = 1
-    all_files = glob.glob(f"../out/{airfoilname}_{kind}*.jpg")
+    num_channel = 3
+    all_files = glob.glob(f"out/{airfoilname}_{kind}*.jpg")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = AerofoilNN(num_channel=num_channel).to(dev)
+    model = Aerofoil4BN2FC(num_channel=num_channel).to(dev)
     model.load_state_dict(
-        torch.load("../aerofoil_mesh_4Conv_BN_2FC.pt", map_location=dev)
+        torch.load("aerofoil_mesh_ogrid_4Conv_BN_2FC.pt", map_location=dev)
     )
     model.eval()
 
@@ -59,4 +59,4 @@ if __name__ == "__main__":
     df = df.sort_values("alpha")
 
     print(f"Saving prediction result")
-    df.to_csv("../prediction.csv", index=False)
+    df.to_csv("prediction.csv", index=False)
