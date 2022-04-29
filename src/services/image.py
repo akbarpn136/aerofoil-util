@@ -3,10 +3,11 @@ import cv2
 import skfmm
 import matplotlib
 import numpy as np
-from PIL import Image
 from scipy.io import wavfile
+from PIL import Image, ImageDraw
 from matplotlib import pyplot as plt
 
+from src.services.mesh import rotate_around
 from src.services.spectro import SpectroGraphic
 
 
@@ -119,4 +120,40 @@ def rendering_spectro(name, angle, points, kind, re, ma):
     fig.savefig(fl, bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
+    img = Image.open(fl)
+    img = img.resize((128, 128))
+    img.save(fl)
+
     os.remove(au)
+
+def rendering_stack(name, angle, points, kind, re, ma):
+    airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
+    airfoil_image_name = airfoil_image_name.replace(" ", "")
+    resolution = 8192
+    offset = resolution // 2
+    divider = 16
+    im = Image.new("RGB", (resolution // divider,
+                   resolution // divider), (0, 0, 0))
+    draw = ImageDraw.Draw(im)
+    cmap = matplotlib.cm.get_cmap("jet", 50)
+    dt = rotate_around(points, np.radians(angle))
+    dt[:, 1] *= -1
+
+    for scale in range(resolution, 32, -1):
+        rgba = cmap(scale / resolution)
+        pts = dt - dt.mean(axis=0)
+        pts *= scale
+        pts += dt.mean(axis=0) + offset // divider
+        pts = np.round(pts).astype(int)
+        pts = tuple(map(tuple, pts))
+        draw.polygon(
+            pts,
+            fill=(
+                int(255 * rgba[0]),
+                int(255 * rgba[1]),
+                int(255 * rgba[2])
+            )
+        )
+
+    im = im.resize((128, 128))
+    im.save(f"out/{airfoil_image_name}")
