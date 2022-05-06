@@ -135,11 +135,11 @@ def rendering_stack(name, angle, points, kind, re, ma):
     im = Image.new("RGB", (resolution // divider,
                    resolution // divider), (0, 0, 0))
     draw = ImageDraw.Draw(im)
-    cmap = matplotlib.cm.get_cmap("jet", 50)
+    cmap = matplotlib.cm.get_cmap("jet_r")
     dt = rotate_around(points, np.radians(angle))
     dt[:, 1] *= -1
 
-    for scale in range(resolution, 32, -1):
+    for scale in range(resolution, 0, -128):
         rgba = cmap(scale / resolution)
         pts = dt - dt.mean(axis=0)
         pts *= scale
@@ -152,8 +152,9 @@ def rendering_stack(name, angle, points, kind, re, ma):
                 int(255 * rgba[0]),
                 int(255 * rgba[1]),
                 int(255 * rgba[2])
-            )
+            ),
+            # width=3
         )
 
     im = im.resize((128, 128))
-    im.save(f"out/{airfoil_image_name}")
+    im.save(f"out/{airfoil_image_name}", quality="maximum")
