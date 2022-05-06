@@ -4,7 +4,7 @@ import pandas as pd
 from mpire import WorkerPool
 
 from src.services.mesh import meshing_ogrid, meshing_unstructured
-from src.services.image import rendering
+from src.services.image import rendering_sdf, rendering_binary, rendering_spectro, rendering_stack
 
 
 def to_img(*payload):
@@ -17,7 +17,8 @@ def to_img(*payload):
     pat = payload[6]
 
     try:
-        ddf = pd.read_csv(f"{pat}/{name}.dat", delim_whitespace=True, header=None, skiprows=1)
+        ddf = pd.read_csv(f"{pat}/{name}.dat",
+                          delim_whitespace=True, header=None, skiprows=1)
         ddf.columns = ["x", "y"]
 
         val = ddf.loc[0, "x"]
@@ -29,10 +30,20 @@ def to_img(*payload):
 
             # Reverse rows from first_half
             first_half = first_half.loc[::-1]
-            ddf = pd.concat([first_half, second_half], axis=0, ignore_index=True)
+            ddf = pd.concat([first_half, second_half],
+                            axis=0, ignore_index=True)
 
         if kn != "mesh":
-            rendering(name, angle, ddf.to_dict("records"), resol, kn, rey, mac)
+            if kn == "sdf":
+                rendering_sdf(name, angle, ddf.to_dict(
+                    "records"), resol, kn, rey, mac)
+            elif kn == "spectro":
+                rendering_spectro(name, angle, ddf.to_numpy(), kn, rey, mac)
+            elif kn == "stack":
+                rendering_stack(name, angle, ddf.to_numpy(), kn, rey, mac)
+            else:
+                rendering_binary(name, angle, ddf.to_numpy(), kn, rey, mac)
+
         elif kn == "mesh":
             meshing_ogrid(name, angle, ddf.to_numpy(), kn, rey, mac)
         else:
@@ -43,10 +54,10 @@ def to_img(*payload):
 
 
 if __name__ == "__main__":
-    kind = "mesh"
-    path = "../out"
-    foil = "../foil"
-    filename = "../out.csv"
+    kind = "stack"
+    path = "out"
+    foil = "foil"
+    filename = "out.csv"
     ma = 0.0
     re = 500000
     resolution = 1024
@@ -61,7 +72,8 @@ if __name__ == "__main__":
     re = [re]
     ma = [ma]
     pth = [foil]
-    paramlist = list(itertools.product(names, angles, resolution, knd, re, ma, pth))
+    paramlist = list(itertools.product(
+        names, angles, resolution, knd, re, ma, pth))
     isExist = os.path.exists(path)
 
     if not isExist:

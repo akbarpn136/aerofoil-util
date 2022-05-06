@@ -40,9 +40,9 @@ def _process(payload):
 
 
 if __name__ == "__main__":
-    kind = "mesh"
-    path = "../aero"
-    filename = "../out.csv"
+    kind = "spectro"
+    path = "aero"
+    filename = "out.csv"
     aeros = glob.glob(f"{path}/*.txt")
     paramlist = list(itertools.product([path], aeros, [kind]))
 

@@ -10,10 +10,8 @@ aerofoil = "aerofoil.main:app"
 
 [tool.poetry.dependencies]
 python = "~3.9"
-typer = {extras = ["all"], version = "^0.4.0"}
 numpy = "^1.22.2"
 matplotlib = "^3.5.1"
-scikit-fmm = "^2022.2.2"
 scipy = "^1.8.0"
 opencv-contrib-python = "^4.5.5"
 torch = "^1.10.2"
@@ -22,6 +20,9 @@ pandas = "^1.4.1"
 pygmsh = "^7.1.17"
 tqdm = "^4.62.3"
 mpire = "^2.3.3"
+scikit-fmm = "^2022.3.26"
+simpleaudio = "^1.0.4"
+wavio = "^0.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
