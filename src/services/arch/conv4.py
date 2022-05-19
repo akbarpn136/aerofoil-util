@@ -87,14 +87,15 @@ class Aerofoil4BN2FC(AerofoilBaseNN):
         self.fc2 = nn.Linear(400, 3)
 
     def forward(self, x):
-        f1 = self.conv1(x)
-        f2 = self.conv2(f1)
-        f3 = self.conv3(f2)
-        f4 = self.conv4(f3)
-        f4_flat = f4.view(f4.size(0), -1)
-        f5 = self.fc1(f4_flat)
+        out = self.conv1(x)
+        out = self.conv2(out)
+        out = self.conv3(out)
+        out = self.conv4(out)
+        out = out.view(out.size(0), -1)
+        out = self.fc1(out)
+        out = self.fc2(out)
 
-        return self.fc2(f5)
+        return out
 
 
 class Aerofoil4DO2FC(AerofoilBaseNN):
