@@ -76,22 +76,19 @@ class Aerofoil2BN2FC(AerofoilBaseNN):
             nn.Conv2d(num_channel, 32, 17),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(4, 4),
-            # nn.Dropout2d(0.4)
+            nn.MaxPool2d(4, 4)
         )
 
         self.conv2 = nn.Sequential(
             nn.Conv2d(32, 64, 17),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            # nn.Dropout2d(0.4)
+            nn.MaxPool2d(2, 2)
         )
 
         self.fc1 = nn.Sequential(
             nn.Linear(64*6*6, 128),
-            nn.ReLU(),
-            nn.Dropout2d(0.4)
+            nn.ReLU()
         )
 
         self.fc2 = nn.Linear(128, 3)
