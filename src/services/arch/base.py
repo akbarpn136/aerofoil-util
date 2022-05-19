@@ -56,4 +56,4 @@ class AerofoilBaseNN(nn.Module):
 
         combine = np.vstack((self.lossList, self.valid_lossList)).T
         df = pd.DataFrame(combine, columns=["train_loss", "valid_loss"])
-        df.to_csv("../train.csv")
+        df.to_csv("train.csv")
