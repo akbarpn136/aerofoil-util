@@ -3,6 +3,7 @@
 *.pt
 *.csv
 *.jpg
+*.dat
 *.txt
 out
 *.pt
