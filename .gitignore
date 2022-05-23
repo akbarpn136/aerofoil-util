@@ -1,6 +1,8 @@
 .idea
 .vscode
 out
+unseen
+seen
 *.pt
 *.csv
 *.jpg
