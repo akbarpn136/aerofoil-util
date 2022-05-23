@@ -139,7 +139,7 @@ def rendering_stack(name, angle, points, kind, re, ma):
     dt = rotate_around(points, np.radians(angle))
     dt[:, 1] *= -1
 
-    for scale in range(resolution, 0, -128):
+    for scale in range(resolution, 0, -64):
         rgba = cmap(scale / resolution)
         pts = dt - dt.mean(axis=0)
         pts *= scale
