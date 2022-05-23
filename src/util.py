@@ -16,3 +16,7 @@ def count_data():
 
         name = aero.replace("aero\\", "").replace("_T1_Re0.500_M0.00_N5.0.txt", "")
         print(f"{name}: {ddf.alpha.count()}")
+
+
+if __name__ == "__main__":
+    count_data()
