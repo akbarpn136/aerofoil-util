@@ -1,10 +1,10 @@
 .idea
 .vscode
+out
+unseen
+seen
 *.pt
 *.csv
 *.jpg
-*.dat
-*.txt
-out
 *.pt
 *.pyc

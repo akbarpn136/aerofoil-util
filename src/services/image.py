@@ -135,17 +135,42 @@ def rendering_stack(name, angle, points, kind, re, ma):
     im = Image.new("RGB", (resolution // divider,
                    resolution // divider), (0, 0, 0))
     draw = ImageDraw.Draw(im)
-    cmap = matplotlib.cm.get_cmap("jet_r")
+    cmap = matplotlib.cm.get_cmap("prism_r")
+
+    im_re = Image.new("RGB", (resolution // divider,
+                   resolution // divider), (0, 0, 0))
+    draw_re = ImageDraw.Draw(im_re)
+
+    if re == 100000:
+        cmap_re = matplotlib.cm.get_cmap("jet_r")
+    elif re == 200000:
+        cmap_re = matplotlib.cm.get_cmap("nipy_spectral")
+    elif re == 500000:
+        cmap_re = matplotlib.cm.get_cmap("gist_ncar")
+    else:
+        cmap_re =  matplotlib.cm.get_cmap("gist_stern")
+
     dt = rotate_around(points, np.radians(angle))
     dt[:, 1] *= -1
 
-    for scale in range(resolution, 0, -128):
+    _draw_airfoil(dt, draw, cmap, resolution, offset, divider)
+    _draw_airfoil(dt, draw_re, cmap_re, resolution, offset, divider)
+
+    im = im.resize((78, 78))
+    im_re = im_re.resize((78, 78))
+
+    img = Image.blend(im, im_re, 0.5)
+    img.save(f"out/{airfoil_image_name}", quality="maximum")
+
+def _draw_airfoil(dt, draw, cmap, resolution, offset, divider):
+    for scale in range(resolution, 0, -64):
         rgba = cmap(scale / resolution)
         pts = dt - dt.mean(axis=0)
         pts *= scale
         pts += dt.mean(axis=0) + offset // divider
         pts = np.round(pts).astype(int)
         pts = tuple(map(tuple, pts))
+
         draw.polygon(
             pts,
             fill=(
@@ -155,6 +180,3 @@ def rendering_stack(name, angle, points, kind, re, ma):
             ),
             # width=3
         )
-
-    im = im.resize((128, 128))
-    im.save(f"out/{airfoil_image_name}", quality="maximum")

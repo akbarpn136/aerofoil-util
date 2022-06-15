@@ -5,7 +5,7 @@ import pandas as pd
 from PIL import Image
 from torchvision.transforms import transforms
 
-from src.services.arch.conv4bn2fc import Aerofoil4BN2FC
+from src.services.arch.conv4 import Aerofoil4BN2FC
 
 if __name__ == "__main__":
     airfoilname = "NACA2024"
