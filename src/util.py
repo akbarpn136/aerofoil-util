@@ -30,25 +30,26 @@ def show_train():
     mpl.rcParams['lines.linewidth'] = 1
     fig, ax = plt.subplots()
 
-    ax.plot(df["train_loss_bin"].to_numpy(),
-            color="red", label="TrainLossGray")
-    ax.plot(df["valid_loss_bin"].to_numpy(), ":",
-            color="red", label="ValidLossGray")
+    ax.plot(df["train_loss_2"].to_numpy(),
+            color="red", label="TrainLoss_Aerofoil2BN2FC")
+    ax.plot(df["valid_loss_2"].to_numpy(), ":",
+            color="red", label="ValidLoss_Aerofoil2BN2FC")
 
-    ax.plot(df["train_loss_un"].to_numpy(),
-            color="green", label="TrainLossUnstruct")
-    ax.plot(df["valid_loss_un"].to_numpy(), ":",
-            color="green", label="ValidLossUnstruct")
+    ax.plot(df["train_loss_3"].to_numpy(),
+            color="green", label="TrainLoss_Aerofoil3BN2FC")
+    ax.plot(df["valid_loss_3"].to_numpy(), ":",
+            color="green", label="ValidLoss_Aerofoil3BN2FC")
 
-    ax.plot(df["train_loss_sdf"].to_numpy(),
-            color="blue", label="TrainLossSDF")
-    ax.plot(df["valid_loss_sdf"].to_numpy(), ":",
-            color="blue", label="ValidLossSDF")
+    ax.plot(df["train_loss_4"].to_numpy(),
+            color="blue", label="TrainLoss_Aerofoil4BN2FC")
+    ax.plot(df["valid_loss_4"].to_numpy(), ":",
+            color="blue", label="ValidLoss_Aerofoil4BN2FC")
 
     ax.set_xlabel("Epochs")
     ax.set_ylabel("MSE")
     ax.set_yscale("log")
     ax.legend()
+    fig.tight_layout()
     plt.show()
     plt.close(fig)
 
@@ -192,4 +193,4 @@ def plot_score():
 
 
 if __name__ == "__main__":
-    plot_score()
+    show_train()
