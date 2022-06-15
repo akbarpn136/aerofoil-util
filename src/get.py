@@ -23,7 +23,7 @@ def _process(payload):
     ma = float(ma)
     image = f"{name}_{knd}_{re}_{ma}"
 
-    ddf = pd.read_fwf(
+    ddf = pd.read_csv(
         fname,
         skiprows=11,
         header=None,
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     kind = "stack"
     path = "aero"
     filename = "out.csv"
-    aeros = glob.glob(f"{path}/*.txt")
+    aeros = glob.glob(f"{path}/*.csv")
     paramlist = list(itertools.product([path], aeros, [kind]))
 
     with Pool(processes=cpu_count()) as pool:
