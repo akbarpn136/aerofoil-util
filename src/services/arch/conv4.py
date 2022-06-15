@@ -52,39 +52,39 @@ class Aerofoil4BN2FC(AerofoilBaseNN):
         super(Aerofoil4BN2FC, self).__init__()
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(num_channel, 10, 15, 1, 1),
-            nn.BatchNorm2d(10),
+            nn.Conv2d(num_channel, 16, 5, 1, 1),
+            nn.BatchNorm2d(16),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(10, 20, 13, 1, 1),
-            nn.BatchNorm2d(20),
+            nn.Conv2d(16, 32, 5, 1, 1),
+            nn.BatchNorm2d(32),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.conv3 = nn.Sequential(
-            nn.Conv2d(20, 40, 7, 1, 1),
-            nn.BatchNorm2d(40),
+            nn.Conv2d(32, 64, 5, 1, 1),
+            nn.BatchNorm2d(64),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.conv4 = nn.Sequential(
-            nn.Conv2d(40, 60, 5, 1, 1),
-            nn.BatchNorm2d(60),
+            nn.Conv2d(64, 64, 5, 1, 1),
+            nn.BatchNorm2d(64),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.fc1 = nn.Sequential(
-            nn.Linear(960, 400),
+            nn.Linear(64 * 3 * 3, 128),
             nn.ReLU()
         )
 
-        self.fc2 = nn.Linear(400, 3)
+        self.fc2 = nn.Linear(128, 3)
 
     def forward(self, x):
         out = self.conv1(x)

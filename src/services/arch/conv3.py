@@ -44,28 +44,28 @@ class Aerofoil3BN2FC(AerofoilBaseNN):
         super(Aerofoil3BN2FC, self).__init__()
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(num_channel, 16, 15, 1),
+            nn.Conv2d(num_channel, 16, 5, 1, 1),
             nn.BatchNorm2d(16),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.conv2 = nn.Sequential(
-            nn.Conv2d(16, 32, 10, 1),
+            nn.Conv2d(16, 32, 5, 1, 1),
             nn.BatchNorm2d(32),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.conv3 = nn.Sequential(
-            nn.Conv2d(32, 64, 13, 1),
+            nn.Conv2d(32, 64, 5,),
             nn.BatchNorm2d(64),
             nn.MaxPool2d(2, 2),
             nn.ReLU()
         )
 
         self.fc1 = nn.Sequential(
-            nn.Linear(64*6*6, 128),
+            nn.Linear(64 * 7 * 7, 128),
             nn.ReLU(),
         )
 
