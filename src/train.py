@@ -12,14 +12,14 @@ from src.services.collection import AerofoilForceDataset
 if __name__ == '__main__':
     batch_size = 41
     num_channel = 3
-    num_epochs = 1200
+    num_epochs = 300
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
         "out.csv",
         "out",
         transform=transforms.Compose([
-            transforms.Resize(128),
+            transforms.Resize(78),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
             else transforms.Normalize((0.5,), (0.5,)),
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     optim = torch.optim.Adam(model.parameters(), learning_rate)
 
     model.fit(loss_func, optim, train_loader, valid_loader, device=dev, epochs=num_epochs)
-    torch.save(model.state_dict(), "aerofoil_stack_Aerofoil4BN2FC.pt")
+    torch.save(model.state_dict(), "aerofoil_stack_Aerofoil3BN2FC.pt")
     plt.plot(model.lossList, label="Train Loss")
     plt.plot(model.valid_lossList, label="Valid Loss")
     plt.yscale("log")
