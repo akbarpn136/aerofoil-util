@@ -4,7 +4,7 @@ import skfmm
 import matplotlib
 import numpy as np
 from scipy.io import wavfile
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 from matplotlib import pyplot as plt
 
 from src.services.mesh import rotate_around
@@ -135,20 +135,20 @@ def rendering_stack(name, angle, points, kind, re, ma):
     im = Image.new("RGB", (resolution // divider,
                    resolution // divider), (0, 0, 0))
     draw = ImageDraw.Draw(im)
-    cmap = matplotlib.cm.get_cmap("prism_r")
+    cmap = matplotlib.cm.get_cmap("jet_r")
 
     im_re = Image.new("RGB", (resolution // divider,
                    resolution // divider), (0, 0, 0))
     draw_re = ImageDraw.Draw(im_re)
 
     if re == 100000:
-        cmap_re = matplotlib.cm.get_cmap("jet_r")
+        cmap_re = matplotlib.cm.get_cmap("Set3")
     elif re == 200000:
-        cmap_re = matplotlib.cm.get_cmap("nipy_spectral")
+        cmap_re = matplotlib.cm.get_cmap("tab20b")
     elif re == 500000:
-        cmap_re = matplotlib.cm.get_cmap("gist_ncar")
+        cmap_re = matplotlib.cm.get_cmap("tab20c")
     else:
-        cmap_re =  matplotlib.cm.get_cmap("gist_stern")
+        cmap_re =  matplotlib.cm.get_cmap("Paired")
 
     dt = rotate_around(points, np.radians(angle))
     dt[:, 1] *= -1
