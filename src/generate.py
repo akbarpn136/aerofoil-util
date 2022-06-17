@@ -35,8 +35,7 @@ def to_img(*payload):
 
         if kn != "mesh":
             if kn == "sdf":
-                rendering_sdf(name, angle, ddf.to_dict(
-                    "records"), resol, kn, rey, mac)
+                rendering_sdf(name, angle, ddf, resol, kn, rey, mac)
             elif kn == "spectro":
                 rendering_spectro(name, angle, ddf.to_numpy(), kn, rey, mac)
             elif kn == "stack":
@@ -54,7 +53,7 @@ def to_img(*payload):
 
 
 if __name__ == "__main__":
-    kind = "stack"
+    kind = "sdf"
     path = "out"
     foil = "foil"
     filename = "out.csv"
