@@ -26,7 +26,7 @@ def rotating(draw, angle):
     return rotated
 
 
-def NormalizeData(data):
+def normalize_data(data):
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
 
@@ -34,14 +34,13 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
     airfoil_image_name = airfoil_image_name.replace(' ', '')
 
-    colormap = "jet"
     dimension = 2  # Image has 2 dimensions shape
     padding = 110
     offset_y = resolution // 2
     phi = -1 * np.ones((resolution, resolution, 1), dtype="uint8")
     airfoils = np.empty((0, dimension), int)
 
-    for point in points:
+    for point in points.to_dict("records"):
         airfoils = np.append(
             airfoils,
             np.array([[
@@ -58,14 +57,31 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
                              padding, cv2.BORDER_CONSTANT, value=[-1, -1, -1])
     phi = rotating(phi, angle)
     phi = skfmm.distance(phi, dx=1, order=2)
+    im = Image.fromarray(np.uint8(cm.jet(normalize_data(phi)) * 255))
+    im = im.convert("RGB")
+    im = im.resize((78, 78))
 
-    matplotlib.use("Agg")
-    fig, ax = plt.subplots()
-    fig.tight_layout()
-    ax.imshow(phi, cmap=plt.get_cmap(colormap))
-    ax.axes.axis("off")
-    fig.savefig(f"out/{airfoil_image_name}", bbox_inches="tight", pad_inches=0)
-    plt.close(fig)
+    im_re = Image.new("RGB", (128, 128), (128, 128, 128))
+    draw_re = ImageDraw.Draw(im_re)
+
+    if re == 300000:
+        cmap_re = matplotlib.cm.get_cmap("hot")
+    elif re == 400000:
+        cmap_re = matplotlib.cm.get_cmap("summer")
+    elif re == 500000:
+        cmap_re = matplotlib.cm.get_cmap("cool")
+    else:
+        cmap_re =  matplotlib.cm.get_cmap("winter")
+
+    pts = points.to_numpy()
+    pts = rotate_around(pts, np.radians(angle))
+    pts[:, 1] *= -1
+    _draw_airfoil(pts, draw_re, cmap_re, 1024, 1024, 16)
+
+    im_re = im_re.resize((78, 78))
+    img = Image.blend(im, im_re, 0.5)
+
+    img.save(f"out/{airfoil_image_name}", quality="maximum")
 
 
 def rendering_binary(name, angle, points, kind, re, ma):
