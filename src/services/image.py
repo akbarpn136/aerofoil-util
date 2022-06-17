@@ -5,7 +5,7 @@ import matplotlib
 import numpy as np
 from scipy.io import wavfile
 from PIL import Image, ImageDraw, ImageOps
-from matplotlib import pyplot as plt
+from matplotlib import cm, pyplot as plt
 
 from src.services.mesh import rotate_around
 from src.services.spectro import SpectroGraphic
@@ -24,6 +24,10 @@ def rotating(draw, angle):
     )
 
     return rotated
+
+
+def NormalizeData(data):
+    return (data - np.min(data)) / (np.max(data) - np.min(data))
 
 
 def rendering_sdf(name, angle, points, resolution, kind, re, ma):
@@ -141,9 +145,9 @@ def rendering_stack(name, angle, points, kind, re, ma):
                    resolution // divider), (0, 0, 0))
     draw_re = ImageDraw.Draw(im_re)
 
-    if re == 100000:
+    if re == 300000:
         cmap_re = matplotlib.cm.get_cmap("Set3")
-    elif re == 200000:
+    elif re == 400000:
         cmap_re = matplotlib.cm.get_cmap("tab20b")
     elif re == 500000:
         cmap_re = matplotlib.cm.get_cmap("tab20c")
