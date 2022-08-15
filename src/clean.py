@@ -16,8 +16,8 @@ def _rename(*payload):
 
 
 if __name__ == "__main__":
-    path = "../out"
-    tmp = "../tmp"
+    path = "out"
+    tmp = "tmp"
     filename = f"{path}.csv"
     df = pd.read_csv(f"{filename}")
     images = df["img"].tolist()

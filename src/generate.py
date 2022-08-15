@@ -58,10 +58,10 @@ if __name__ == "__main__":
     foil = "foil"
     filename = "out.csv"
     ma = 0.0
-    re = 500000
+    re = 200000
     resolution = 1024
-    angle_start = -20
-    angle_stop = 20
+    angle_start = -2
+    angle_stop = 15
 
     df = pd.read_csv(f"{filename}")
     names = df["name"].unique()

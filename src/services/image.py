@@ -64,11 +64,19 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
     im_re = Image.new("RGB", (128, 128), (128, 128, 128))
     draw_re = ImageDraw.Draw(im_re)
 
+<<<<<<< Updated upstream
     if re == 300000:
         cmap_re = matplotlib.cm.get_cmap("hot")
     elif re == 400000:
         cmap_re = matplotlib.cm.get_cmap("summer")
     elif re == 500000:
+=======
+    if re == 103000:
+        cmap_re = matplotlib.cm.get_cmap("hot")
+    elif re == 147000:
+        cmap_re = matplotlib.cm.get_cmap("summer")
+    elif re == 200000:
+>>>>>>> Stashed changes
         cmap_re = matplotlib.cm.get_cmap("cool")
     else:
         cmap_re =  matplotlib.cm.get_cmap("winter")

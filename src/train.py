@@ -10,9 +10,13 @@ from src.services.arch.conv4 import Aerofoil4BN2FC
 from src.services.collection import AerofoilForceDataset
 
 if __name__ == '__main__':
-    batch_size = 41
+    batch_size = 18
     num_channel = 3
+<<<<<<< Updated upstream
     num_epochs = 300
+=======
+    num_epochs = 1000
+>>>>>>> Stashed changes
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
@@ -20,6 +24,10 @@ if __name__ == '__main__':
         "out",
         transform=transforms.Compose([
             transforms.Resize(78),
+<<<<<<< Updated upstream
+=======
+            transforms.RandomPerspective(distortion_scale=0.6, p=1.0),
+>>>>>>> Stashed changes
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
             else transforms.Normalize((0.5,), (0.5,)),
@@ -46,4 +54,5 @@ if __name__ == '__main__':
     plt.xlabel("Epoch")
     plt.ylabel("MSE")
     plt.legend()
-    plt.show()
+    # plt.show()
+    plt.savefig("aerofoil_stack_Aerofoil3BN2FC.png", bbox_inches="tight")
