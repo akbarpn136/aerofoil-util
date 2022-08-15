@@ -64,22 +64,14 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
     im_re = Image.new("RGB", (128, 128), (128, 128, 128))
     draw_re = ImageDraw.Draw(im_re)
 
-<<<<<<< Updated upstream
-    if re == 300000:
-        cmap_re = matplotlib.cm.get_cmap("hot")
-    elif re == 400000:
-        cmap_re = matplotlib.cm.get_cmap("summer")
-    elif re == 500000:
-=======
     if re == 103000:
         cmap_re = matplotlib.cm.get_cmap("hot")
     elif re == 147000:
         cmap_re = matplotlib.cm.get_cmap("summer")
     elif re == 200000:
->>>>>>> Stashed changes
         cmap_re = matplotlib.cm.get_cmap("cool")
     else:
-        cmap_re =  matplotlib.cm.get_cmap("winter")
+        cmap_re = matplotlib.cm.get_cmap("winter")
 
     pts = points.to_numpy()
     pts = rotate_around(pts, np.radians(angle))
@@ -154,6 +146,7 @@ def rendering_spectro(name, angle, points, kind, re, ma):
 
     os.remove(au)
 
+
 def rendering_stack(name, angle, points, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
     airfoil_image_name = airfoil_image_name.replace(" ", "")
@@ -166,7 +159,7 @@ def rendering_stack(name, angle, points, kind, re, ma):
     cmap = matplotlib.cm.get_cmap("jet_r")
 
     im_re = Image.new("RGB", (resolution // divider,
-                   resolution // divider), (0, 0, 0))
+                              resolution // divider), (0, 0, 0))
     draw_re = ImageDraw.Draw(im_re)
 
     if re == 300000:
@@ -176,7 +169,7 @@ def rendering_stack(name, angle, points, kind, re, ma):
     elif re == 500000:
         cmap_re = matplotlib.cm.get_cmap("tab20c")
     else:
-        cmap_re =  matplotlib.cm.get_cmap("Paired")
+        cmap_re = matplotlib.cm.get_cmap("Paired")
 
     dt = rotate_around(points, np.radians(angle))
     dt[:, 1] *= -1
@@ -189,6 +182,7 @@ def rendering_stack(name, angle, points, kind, re, ma):
 
     img = Image.blend(im, im_re, 0.5)
     img.save(f"out/{airfoil_image_name}", quality="maximum")
+
 
 def _draw_airfoil(dt, draw, cmap, resolution, offset, divider):
     for scale in range(resolution, 0, -64):
