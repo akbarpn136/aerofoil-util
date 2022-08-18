@@ -4,7 +4,15 @@ out
 unseen
 seen
 *.pt
-*.csv
 *.jpg
 *.pt
 *.pyc
+out.csv
+tmp.csv
+train.csv
+train_*.csv
+airfoil.csv
+training.csv
+training_*.csv
+prediction.csv
+prediction_*.csv
