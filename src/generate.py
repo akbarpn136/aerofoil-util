@@ -18,7 +18,7 @@ def to_img(*payload):
 
     try:
         ddf = pd.read_csv(f"{pat}/{name}.dat",
-                          delim_whitespace=True, header=None)
+                          delim_whitespace=True, header=None, skiprows=1)
         ddf.columns = ["x", "y"]
 
         val = ddf.loc[0, "x"]
