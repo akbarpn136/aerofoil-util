@@ -16,3 +16,4 @@ training.csv
 training_*.csv
 prediction.csv
 prediction_*.csv
+*.xfl
