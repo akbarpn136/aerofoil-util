@@ -1,5 +1,5 @@
 import pathlib
-import bezier
+# import bezier
 import itertools
 import numpy as np
 from matplotlib import pyplot as plt
@@ -44,9 +44,9 @@ def bump(x, location, magnitude, n=100):
     return y
 
 
-if __name__ == "__main__":
+def airfoil_bump():
     n = 100  # Number of points
-    x = np.linspace(0, 1, n, endpoint=True)
+    x = np.linspace(0, 1, n, endpoint=True, dtype=np.float16)
     # p = pathlib.Path(__file__)
     # my_data = np.genfromtxt(f"{p.parent}/Aerofoil1000.dat",
     #                         delimiter=",")
@@ -63,19 +63,40 @@ if __name__ == "__main__":
         [0.16, 0.23, 0.34, 0.56],
         [0.13, 0.26, 0.41, 0.64],
         [0.15, 0.3, 0.43, 0.73],
-    ])
+    ], dtype=np.float16)
 
     nodes = 15
-    bm_upper1 = np.linspace(0.01, 0.03, nodes)
-    bm_upper2 = np.linspace(0.03, 0.04, nodes)
-    bm_upper3 = np.linspace(0.04, 0.09, nodes)
-    bm_upper4 = np.linspace(0.02, 0.05, nodes)
+    bm_upper1 = np.linspace(0.01, 0.03, nodes, dtype=np.float16)
+    bm_upper2 = np.linspace(0.03, 0.04, nodes, dtype=np.float16)
+    bm_upper3 = np.linspace(0.04, 0.09, nodes, dtype=np.float16)
+    bm_upper4 = np.linspace(0.02, 0.05, nodes, dtype=np.float16)
 
     for i in range(loc.shape[0]):
         for j in range(nodes):
             bm = [bm_upper1[j], bm_upper2[j], bm_upper3[j], bm_upper4[j]]
+
             upper = bump(x, loc[i], bm, n)
+            up = np.flip(
+                np.vstack((x, upper)).T,
+                axis=0
+            )
 
-            plt.plot(x, upper)
+            lower = bump(
+                x,
+                np.array((0.08, 0.11, 0.28, 0.52), dtype=np.float16),
+                np.array((-0.007, -0.015, 0.01, 0.018), dtype=np.float16)
+            )
+            low = np.vstack((x, lower)).T
+            low = low[1:, :]
 
-    plt.show()
+            foil = np.vstack((up, low))
+            np.savetxt(
+                f"foil/Aerofoil{i + 1}.dat",
+                foil,
+                header=f"Aerofoil{i + 1}",
+                comments=""
+            )
+
+
+if __name__ == "__main__":
+    airfoil_bump()
