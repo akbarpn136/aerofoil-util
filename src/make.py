@@ -1,5 +1,5 @@
 import pathlib
-# import bezier
+import bezier
 import itertools
 import numpy as np
 from matplotlib import pyplot as plt
@@ -45,7 +45,7 @@ def bump(x, location, magnitude, n=100):
 
 
 def airfoil_bump():
-    n = 100  # Number of points
+    n = 46  # Number of points
     x = np.linspace(0, 1, n, endpoint=True, dtype=np.float16)
     # p = pathlib.Path(__file__)
     # my_data = np.genfromtxt(f"{p.parent}/Aerofoil1000.dat",
@@ -71,6 +71,7 @@ def airfoil_bump():
     bm_upper3 = np.linspace(0.04, 0.09, nodes, dtype=np.float16)
     bm_upper4 = np.linspace(0.02, 0.05, nodes, dtype=np.float16)
 
+    foils = []
     for i in range(loc.shape[0]):
         for j in range(nodes):
             bm = [bm_upper1[j], bm_upper2[j], bm_upper3[j], bm_upper4[j]]
@@ -80,6 +81,7 @@ def airfoil_bump():
                 np.vstack((x, upper)).T,
                 axis=0
             )
+            up = up[1:, :]
 
             lower = bump(
                 x,
@@ -87,15 +89,18 @@ def airfoil_bump():
                 np.array((-0.007, -0.015, 0.01, 0.018), dtype=np.float16)
             )
             low = np.vstack((x, lower)).T
-            low = low[1:, :]
+            low = low[1:-1, :]
 
             foil = np.vstack((up, low))
-            np.savetxt(
-                f"foil/Aerofoil{i + 1000}.dat",
-                foil,
-                header=f"Aerofoil{i + 1000}",
-                comments=""
-            )
+            foils.append(foil)
+
+    for i in range(len(foils)):
+        np.savetxt(
+            f"foil/Aerofoil{i + 1000}.dat",
+            foils[i],
+            header=f"Aerofoil{i + 1000}",
+            comments=""
+        )
 
 
 if __name__ == "__main__":
