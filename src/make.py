@@ -91,9 +91,9 @@ def airfoil_bump():
 
             foil = np.vstack((up, low))
             np.savetxt(
-                f"foil/Aerofoil{i + 1}.dat",
+                f"foil/Aerofoil{i + 1000}.dat",
                 foil,
-                header=f"Aerofoil{i + 1}",
+                header=f"Aerofoil{i + 1000}",
                 comments=""
             )
 
