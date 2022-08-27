@@ -4,7 +4,7 @@ import skfmm
 import matplotlib
 import numpy as np
 from scipy.io import wavfile
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageFont
 from matplotlib import cm, pyplot as plt
 
 from src.services.mesh import rotate_around
@@ -63,20 +63,8 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
 
     im_re = Image.new("RGB", (128, 128), (128, 128, 128))
     draw_re = ImageDraw.Draw(im_re)
-
-    if re == 103000:
-        cmap_re = matplotlib.cm.get_cmap("hot")
-    elif re == 147000:
-        cmap_re = matplotlib.cm.get_cmap("summer")
-    elif re == 200000:
-        cmap_re = matplotlib.cm.get_cmap("cool")
-    else:
-        cmap_re = matplotlib.cm.get_cmap("winter")
-
-    pts = points.to_numpy()
-    pts = rotate_around(pts, np.radians(angle))
-    pts[:, 1] *= -1
-    _draw_airfoil(pts, draw_re, cmap_re, 1024, 1024, 16)
+    font = ImageFont.truetype("arial.ttf", 21)
+    draw_re.text((30, 52), str(re), font=font, fill=(255, 255, 255, 64))
 
     im_re = im_re.resize((78, 78))
     img = Image.blend(im, im_re, 0.5)
