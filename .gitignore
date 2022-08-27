@@ -17,4 +17,4 @@ training_*.csv
 prediction.csv
 prediction_*.csv
 *.xfl
-aerofoil_stack_Aerofoil3BN2FC.png
+*.png
