@@ -12,7 +12,7 @@ from src.services.collection import AerofoilForceDataset
 if __name__ == '__main__':
     batch_size = 18
     num_channel = 3
-    num_epochs = 4000
+    num_epochs = 1000
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
@@ -20,7 +20,11 @@ if __name__ == '__main__':
         "out",
         transform=transforms.Compose([
             transforms.Resize(78),
-            transforms.RandomPerspective(distortion_scale=0.2, p=1.0),
+            transforms.RandomAffine(
+                degrees=0,
+                translate=(0.2, 0.2),
+                scale=(0.5, 0.75)
+            ),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
             else transforms.Normalize((0.5,), (0.5,)),
