@@ -20,11 +20,6 @@ if __name__ == '__main__':
         "out",
         transform=transforms.Compose([
             transforms.Resize(78),
-            transforms.RandomAffine(
-                degrees=0,
-                translate=(0.2, 0.2),
-                scale=(0.5, 0.75)
-            ),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
             else transforms.Normalize((0.5,), (0.5,)),
