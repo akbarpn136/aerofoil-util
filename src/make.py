@@ -1,33 +1,127 @@
-import pathlib
-import bezier
-import itertools
+import csv
 import numpy as np
-from matplotlib import pyplot as plt
+from geomdl import BSpline
+from geomdl import utilities
 
 
-def airfoil_bezier(num=100):
-    rng = np.random.default_rng(2022)
+def genfoil_curve(id, coords, degree=2, sample=100):
+    name = "Aerofoil"
+    curve = BSpline.Curve()
 
-    for i in range(num):
-        randpoints = np.array([
-            [1, 0.00],  # trailing edge (top)
-            [0.76, rng.random.uniform(0.04, 0.1)],
-            [0.52, rng.random.uniform(0.1, 0.2)],
-            [0.25, rng.random.uniform(0.1, 0.2)],
-            [0.1, rng.random.uniform(0, 0.1)],
-            [0, rng.random.uniform(0, 0.06)],  # leading edge (top)
-            [0, -1 * rng.random.uniform(0, 0.06)],  # leading edge (bottom)
-            [0.15, -1 * rng.random.uniform(0, 0.1)],
-            [0.37, -1 * rng.random.uniform(0, 0.1)],
-            [0.69, rng.random.uniform(-0.04, 0.04)],
-            [1, 0.00],  # trailing edge (bottom)
-        ])
+    # Set up the Bezier curve
+    curve.degree = degree
+    curve.ctrlpts = coords
 
-        curve = bezier.Curve(randpoints.T, degree=randpoints.shape[0] - 1)
-        eval_range = np.linspace(0, 1, 100)
-        result = curve.evaluate_multi(eval_range)
-        np.savetxt(f"foil/Aerofoil{i + 1}.dat", result.T,
-                   header=f"Aerofoil{i + 1}", comments="")
+    # Auto-generate knot vector
+    curve.knotvector = utilities.generate_knot_vector(
+        curve.degree,
+        len(curve.ctrlpts)
+    )
+
+    # Set evaluation delta
+    curve.sample_size = sample
+
+    with open(f"foil/{name}{5000 + id}.dat", "w") as f:
+        f.write(f"{name}{5000 + id}\n")
+
+        write = csv.writer(f, delimiter=" ", lineterminator="\n")
+        write.writerows(curve.evalpts)
+
+
+def airfoil_bezier(num=10):
+    up11 = np.linspace(0.01698, 0.02, num, dtype=np.float16)
+    up12 = np.linspace(0.05805, 0.06, num, dtype=np.float16)
+    up13 = np.linspace(0.12363, 0.15, num, dtype=np.float16)
+    up14 = np.linspace(0.07339, 0.1, num, dtype=np.float16)
+    up15 = np.linspace(0.01515, 0.02, num, dtype=np.float16)
+    up21 = np.linspace(0.02, 0.03, num, dtype=np.float16)
+    up22 = np.linspace(0.07, 0.1, num, dtype=np.float16)
+    up23 = np.linspace(0.14, 0.15, num, dtype=np.float16)
+    up24 = np.linspace(0.08, 0.1, num, dtype=np.float16)
+    up25 = np.linspace(0.02, 0.03, num, dtype=np.float16)
+
+    low11 = np.linspace(-0.01213, -0.02, num, dtype=np.float16)
+    low12 = np.linspace(-0.01975, -0.03, num, dtype=np.float16)
+    low13 = np.linspace(0.00720, 0.02, num, dtype=np.float16)
+    low14 = np.linspace(0.02549, 0.05, num, dtype=np.float16)
+    low15 = np.linspace(0.00952, 0.01, num, dtype=np.float16)
+    low21 = np.linspace(-0.02, -0.03, num, dtype=np.float16)
+    low22 = np.linspace(-0.023, -0.033, num, dtype=np.float16)
+    low23 = np.linspace(0.01, -0.01, num, dtype=np.float16)
+    low24 = np.linspace(0.04, 0.01, num, dtype=np.float16)
+    low25 = np.linspace(0.015, -0.01, num, dtype=np.float16)
+
+    for idx in range(num):
+        coord_upper1 = (
+            (1.000, 0),
+            (0.95916, up11[idx]),
+            (0.77901, up12[idx]),
+            (0.39420, up13[idx]),
+            (0.07526, up14[idx]),
+            (0.00185, up15[idx]),
+            (0.000, 0.000),
+            (0.00077, -0.01213),
+            (0.04964, -0.01975),
+            (0.24755, 0.00720),
+            (0.50960, 0.02549),
+            (0.88475, 0.00952),
+            (1.000, 0),
+        )
+
+        coord_upper2 = (
+            (1.000, 0),
+            (0.95916, up21[idx]),
+            (0.77901, up22[idx]),
+            (0.39420, up23[idx]),
+            (0.07526, up24[idx]),
+            (0.00185, up25[idx]),
+            (0.000, 0.000),
+            (0.00077, -0.01213),
+            (0.04964, -0.01975),
+            (0.24755, 0.00720),
+            (0.50960, 0.02549),
+            (0.88475, 0.00952),
+            (1.000, 0),
+        )
+
+        genfoil_curve(idx, coord_upper1, 3)
+        genfoil_curve(idx + num, coord_upper2, 3)
+
+    for idx in range(num):
+        coord_lower1 = (
+            (1.000, 0),
+            (0.95916, 0.01698),
+            (0.77901, 0.05805),
+            (0.39420, 0.12363),
+            (0.07526, 0.07339),
+            (0.00185, 0.01515),
+            (0.000, 0.000),
+            (0.00077, low11[idx]),
+            (0.04964, low12[idx]),
+            (0.24755, low13[idx]),
+            (0.50960, low14[idx]),
+            (0.88475, low15[idx]),
+            (1.000, 0),
+        )
+
+        coord_lower2 = (
+            (1.000, 0),
+            (0.95916, 0.01698),
+            (0.77901, 0.05805),
+            (0.39420, 0.12363),
+            (0.07526, 0.07339),
+            (0.00185, 0.01515),
+            (0.000, 0.000),
+            (0.00077, low21[idx]),
+            (0.04964, low22[idx]),
+            (0.24755, low23[idx]),
+            (0.50960, low24[idx]),
+            (0.88475, low25[idx]),
+            (1.000, 0),
+        )
+
+        genfoil_curve(idx + num + num, coord_lower1, 3)
+        genfoil_curve(idx + num + num + num, coord_lower2, 3)
 
 
 def bump(x, location, magnitude, n=100):
@@ -104,4 +198,4 @@ def airfoil_bump():
 
 
 if __name__ == "__main__":
-    airfoil_bump()
+    airfoil_bezier()
