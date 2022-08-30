@@ -58,7 +58,7 @@ if __name__ == "__main__":
     foil = "foil"
     filename = "out.csv"
     ma = 0.0
-    re = 200000  # 103000, 147000, 200000
+    re = 1000000  # 200000, 500000, 1000000
     resolution = 1024
     angle_start = -2
     angle_stop = 15
