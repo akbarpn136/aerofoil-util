@@ -5,17 +5,17 @@ import pandas as pd
 from PIL import Image
 from torchvision.transforms import transforms
 
-from src.services.arch.conv4 import Aerofoil4BN2FC
+from src.services.arch.conv3 import Aerofoil3BN2FC
 
 if __name__ == "__main__":
-    airfoilname = "NACA2024"
-    kind = "mesh"
+    airfoilname = "NACA6409"
+    kind = "sdf"
     num_channel = 3
     all_files = glob.glob(f"out/{airfoilname}_{kind}*.jpg")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = Aerofoil4BN2FC(num_channel=num_channel).to(dev)
+    model = Aerofoil3BN2FC(num_channel=num_channel).to(dev)
     model.load_state_dict(
-        torch.load("aerofoil_mesh_ogrid_4Conv_BN_2FC.pt", map_location=dev)
+        torch.load("aerofoil_stack_Aerofoil3BN2FC_aug.pt", map_location=dev)
     )
     model.eval()
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
             img = img.convert("L")
 
         transform = transforms.Compose([
-            transforms.Resize(128),
+            transforms.Resize(78),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) if num_channel == 3
             else transforms.Normalize((0.5,), (0.5,))
