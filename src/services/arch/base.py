@@ -4,22 +4,34 @@ import numpy as np
 import pandas as pd
 from torch import nn
 from tqdm import tqdm
+from torchvision import models
 
 
 class AerofoilBaseNN(nn.Module):
-    def __init__(self):
+    def __init__(self, tf=False, dev=None):
         super(AerofoilBaseNN, self).__init__()
         torch.manual_seed(2022)
 
+        self.tf = tf
+        self.dev = dev
         self.lossList = []
         self.valid_lossList = []
+        modal = None
+
+        if self.tf == True:
+            self.mdl = models.vgg11_bn(pretrained=True)
+
+            for param in self.mdl.parameters():
+                param.requires_grad = False
+
+            self.mdl.classifier[6] = nn.Linear(4096, 3)
+            self.mdl.to(self.dev)
 
     def fit(self,
             criterion,
             optimizer,
             train_loader,
             valid_loader,
-            device,
             epochs=100):
         for epoch in range(epochs):
             loss_sum_train = 0
@@ -27,10 +39,14 @@ class AerofoilBaseNN(nn.Module):
 
             self.train()
             for _, (images, labels) in enumerate(tqdm(train_loader, desc="Train step", file=sys.stdout, colour="blue")):
-                images = images.to(device)
-                labels = labels.to(device)
+                images = images.to(self.dev)
+                labels = labels.to(self.dev)
 
-                output = self(images)
+                if self.tf == True:
+                    output = self.mdl(images)
+                else:
+                    mdl = self.to(self.dev)
+                    output = mdl(images)
                 loss = criterion(output, labels)
                 optimizer.zero_grad()
                 loss.backward()
@@ -42,9 +58,14 @@ class AerofoilBaseNN(nn.Module):
 
             self.eval()
             for _, (images, labels) in enumerate(tqdm(valid_loader, desc="Valid step", file=sys.stdout, colour="green")):
-                images = images.to(device)
-                labels = labels.to(device)
-                output_valid = self(images)
+                images = images.to(self.dev)
+                labels = labels.to(self.dev)
+
+                if self.tf == True:
+                    output_valid = self.mdl(images)
+                else:
+                    output_valid = self(images)
+
                 loss = criterion(output_valid, labels)
                 loss_sum_validation += loss.item()
 
