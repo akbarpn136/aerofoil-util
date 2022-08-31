@@ -40,8 +40,8 @@ class Aerofoil3BN1FC(AerofoilBaseNN):
 
 
 class Aerofoil3BN2FC(AerofoilBaseNN):
-    def __init__(self, num_channel=3):
-        super(Aerofoil3BN2FC, self).__init__()
+    def __init__(self, num_channel=3, dev=None):
+        super().__init__(dev=dev)
 
         self.conv1 = nn.Sequential(
             nn.Conv2d(num_channel, 16, 9, 1, 1),
