@@ -34,24 +34,14 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}.jpg"
     airfoil_image_name = airfoil_image_name.replace(' ', '')
 
-    dimension = 2  # Image has 2 dimensions shape
     padding = 110
-    offset_y = resolution // 2
     phi = -1 * np.ones((resolution, resolution, 1), dtype="uint8")
-    airfoils = np.empty((0, dimension), int)
+    points = points * 512
+    points[:, 0] += 256
+    points[:, 1] += 512
 
-    for point in points.to_dict("records"):
-        airfoils = np.append(
-            airfoils,
-            np.array([[
-                round(resolution * point["x"]),
-                round(resolution * point["y"] + offset_y)
-            ]]),
-            axis=0
-        )
-
-    airfoils = airfoils.reshape((-1, 1, 2))
-    cv2.fillPoly(phi, [airfoils], (255, 255, 255), lineType=cv2.LINE_AA)
+    cv2.fillPoly(phi, [points.astype(np.int)],
+                 (255, 255, 255), lineType=cv2.LINE_AA)
     phi = cv2.flip(phi, 0)
     phi = cv2.copyMakeBorder(phi, padding, padding, padding,
                              padding, cv2.BORDER_CONSTANT, value=[-1, -1, -1])
@@ -96,6 +86,7 @@ def rendering_binary(name, angle, points, kind, re, ma):
 
 
 def rendering_spectro(name, angle, points, kind, re, ma):
+    np.seterr(divide="ignore")
     airfoil_image_name = f"{name}_{kind}_{re}_{ma}_{angle}"
     airfoil_image_name = airfoil_image_name.replace(" ", "")
     px = points[:, 0]
@@ -114,22 +105,17 @@ def rendering_spectro(name, angle, points, kind, re, ma):
     fig.savefig(fl, bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
-    img = Image.open(fl)
-    img = img.rotate(-1 * angle)
-    img = img.resize((146, 146))
-    img.save(fl)
-
-    sg = SpectroGraphic(path=fl, duration=1, height=35)
+    sg = SpectroGraphic(path=fl, duration=20, height=35)
     sg.save(wav_file=au)
     Fs, aud = wavfile.read(au)
     fig, ax = plt.subplots(figsize=(10, 10))
-    ax.specgram(aud, Fs=Fs, cmap=plt.get_cmap("viridis"))
+    ax.specgram(aud, Fs=Fs, cmap=plt.get_cmap("plasma"))
     ax.axes.axis("off")
     fig.savefig(fl, bbox_inches="tight", pad_inches=0)
     plt.close(fig)
 
     img = Image.open(fl)
-    img = img.resize((128, 128))
+    img = img.resize((78, 78))
     img.save(fl)
 
     os.remove(au)

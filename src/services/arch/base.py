@@ -19,7 +19,7 @@ class AerofoilBaseNN(nn.Module):
         modal = None
 
         if self.tf == True:
-            self.mdl = models.vgg11_bn(pretrained=True)
+            self.mdl = models.vgg11_bn(weights=models.VGG11_BN_Weights.DEFAULT)
 
             for param in self.mdl.parameters():
                 param.requires_grad = False

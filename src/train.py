@@ -11,7 +11,7 @@ from src.services.collection import AerofoilForceDataset
 if __name__ == '__main__':
     batch_size = 18
     num_channel = 3
-    num_epochs = 1000
+    num_epochs = 4000
     learning_rate = 0.00001
 
     dataset = AerofoilForceDataset(
@@ -36,14 +36,14 @@ if __name__ == '__main__':
                               batch_size=batch_size, shuffle=True)
 
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # model = Aerofoil3BN2FC(num_channel=num_channel, dev=torch.device("cuda"))
-    model = AerofoilBaseNN(True, dev)
+    model = Aerofoil3BN2FC(num_channel=num_channel, dev=torch.device("cuda"))
+    # model = AerofoilBaseNN(True, dev)
     loss_func = nn.MSELoss()
     optim = torch.optim.Adam(model.parameters(), learning_rate)
 
     model.fit(loss_func, optim, train_loader,
               valid_loader, epochs=num_epochs)
-    torch.save(model.state_dict(), "aerofoil_stack_Aerofoil3BN2FC.pt")
+    torch.save(model.state_dict(), "aerofoil_sdf_Aerofoil3BN2FC_img.pt")
     plt.plot(model.lossList, label="Train Loss")
     plt.plot(model.valid_lossList, label="Valid Loss")
     plt.yscale("log")
@@ -51,4 +51,4 @@ if __name__ == '__main__':
     plt.ylabel("MSE")
     plt.legend()
     # plt.show()
-    plt.savefig("aerofoil_stack_Aerofoil3BN2FC.png", bbox_inches="tight")
+    plt.savefig("aerofoil_sdf_Aerofoil3BN2FC_img.png", bbox_inches="tight")
