@@ -64,7 +64,7 @@ def rendering_sdf(name, angle, points, resolution, kind, re, ma):
     im_re = Image.new("RGB", (128, 128), (128, 128, 128))
     draw_re = ImageDraw.Draw(im_re)
     font = ImageFont.truetype("arial.ttf", 21)
-    draw_re.text((30, 52), str(re), font=font, fill=(255, 255, 255, 64))
+    draw_re.text((68, 5), str(re), font=font, fill=(255, 255, 255, 64))
 
     im_re = im_re.resize((78, 78))
     img = Image.blend(im, im_re, 0.5)
