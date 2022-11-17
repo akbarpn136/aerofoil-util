@@ -10,6 +10,7 @@ seen
 out.csv
 tmp.csv
 train.csv
+make.csv
 train_*.csv
 airfoil.csv
 training.csv
