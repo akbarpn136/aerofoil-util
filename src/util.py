@@ -100,25 +100,60 @@ def show_vartrain():
 
 
 def plot_prediction(mode="cl"):
-    df = pd.read_csv("prediction.csv", delimiter="\t")
+    df = pd.read_csv("actual.csv")
+    bin = pd.read_csv("prediction_binary.csv")
+    um = pd.read_csv("prediction_mesh.csv")
+    sdf = pd.read_csv("prediction_sdf.csv")
 
-    plt.style.use("bmh")
-    mpl.rcParams['lines.linewidth'] = 1
-    fig, ax = plt.subplots()
+    mpl.use('pgf')
+    mpl.rcParams.update({
+        'pgf.texsystem': 'pdflatex',
+        'font.family': 'serif',
+        'font.size': 25,
+        'text.usetex': True,
+        'pgf.rcfonts': False,
+    })
+    fig, ax = plt.subplots(figsize=(8, 8))
 
-    ax.plot(df["alpha"].to_numpy(),
-            df[f"{mode}_actual"].to_numpy(), color="k", label="actual")
-    ax.plot(df["alpha"].to_numpy(), df[f"{mode}_bin"].to_numpy(
-    ), marker="x", linestyle="None", color="red", label="gray")
-    ax.plot(df["alpha"].to_numpy(), df[f"{mode}_un"].to_numpy(
-    ), marker="+", linestyle="None", color="blue", label="unstructured")
-    ax.plot(df["alpha"].to_numpy(), df[f"{mode}_sdf"].to_numpy(
-    ), marker=".", linestyle="None", color="green", label="sdf")
+    ax.plot(
+        df["alpha"].to_numpy(),
+        df[f"{mode}"].to_numpy(),
+        color="k",
+        label="actual"
+    )
+
+    ax.plot(
+        bin["alpha"].to_numpy(),
+        bin[f"{mode}"].to_numpy(),
+        marker="x",
+        linestyle="None",
+        color="red",
+        label="Gray"
+    )
+
+    ax.plot(
+        um["alpha"].to_numpy(),
+        um[f"{mode}"].to_numpy(),
+        marker="+",
+        linestyle="None",
+        color="blue",
+        label="UM"
+    )
+
+    ax.plot(
+        sdf["alpha"].to_numpy(),
+        sdf[f"{mode}"].to_numpy(),
+        marker=".",
+        linestyle="None",
+        color="green",
+        label="SDF"
+    )
 
     ax.set_xlabel(r"$\alpha$")
     ax.set_ylabel(mode)
     ax.legend()
-    plt.show()
+    ax.grid(linestyle='--')
+    fig.savefig(f'pred_{mode}.pgf')
     plt.close(fig)
 
 
@@ -247,4 +282,4 @@ def plot_score():
 
 
 if __name__ == "__main__":
-    show_vartrain()
+    plot_prediction('cm')
