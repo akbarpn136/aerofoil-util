@@ -162,129 +162,62 @@ def plot_prediction(mode="cl"):
     plt.close(fig)
 
 
-def plot_score():
-    df = pd.read_csv("prediction.csv", delimiter="\t")
+def plot_score(mode='cl', render='Grayscale'):
+    df = pd.read_csv("actual.csv")
+    bin = pd.read_csv("prediction_binary.csv")
+    um = pd.read_csv("prediction_mesh.csv")
+    sdf = pd.read_csv("prediction_sdf.csv")
 
-    plt.style.use("bmh")
-    mpl.rcParams['lines.linewidth'] = 1
+    mpl.use('pgf')
+    mpl.rcParams.update({
+        'pgf.texsystem': 'pdflatex',
+        'font.family': 'serif',
+        'font.size': 25,
+        'text.usetex': True,
+        'pgf.rcfonts': False,
+    })
+    fig, ax = plt.subplots(figsize=(10, 10))
 
-    fig, ((ax1, ax2, ax3),
-          (ax4, ax5, ax6),
-          (ax7, ax8, ax9)) = plt.subplots(3, 3, figsize=(10, 10))
+    actual = df[mode].to_numpy()
 
-    # First row
-    clactual_bin = df["cl_actual"].to_numpy()
-    clpredicted_bin = df[f"cl_bin"].to_numpy()
-    coef_bin1 = np.polyfit(clactual_bin, clpredicted_bin, 1)
-    poly_bin1 = np.poly1d(coef_bin1)
-    ax1.set_title("Grayscale", fontsize=12)
-    ax1.plot(clactual_bin, clpredicted_bin, marker=".",
-             color="green", linestyle="None")
-    ax1.plot(clactual_bin, poly_bin1(clactual_bin), color="k")
-    ax1.set_xlabel(r"Actual $C_l$", fontsize=9)
-    ax1.set_ylabel(r"Predicted $C_l$", fontsize=9)
+    if render == 'Grayscale':
+        predicted = bin[mode].to_numpy()
+    elif render == 'UM':
+        predicted = um[mode].to_numpy()
+    else:
+        predicted = sdf[mode].to_numpy()
 
-    cdactual_bin = df["cd_actual"].to_numpy()
-    cdpredicted_bin = df[f"cd_bin"].to_numpy()
-    coef_bin2 = np.polyfit(cdactual_bin, cdpredicted_bin, 1)
-    poly_bin2 = np.poly1d(coef_bin2)
-    ax2.set_title("Grayscale", fontsize=12)
-    ax2.plot(cdactual_bin, cdpredicted_bin, marker=".",
-             color="green", linestyle="None")
-    ax2.plot(cdactual_bin, poly_bin2(cdactual_bin), color="k")
-    ax2.set_xlabel(r"Actual $C_d$", fontsize=9)
-    ax2.set_ylabel(r"Predicted $C_d$", fontsize=9)
-
-    cmactual_bin = df["cm_actual"].to_numpy()
-    cmpredicted_bin = df[f"cm_bin"].to_numpy()
-    coef_bin3 = np.polyfit(cmactual_bin, cmpredicted_bin, 1)
-    poly_bin3 = np.poly1d(coef_bin3)
-    ax3.set_title("Grayscale", fontsize=12)
-    ax3.plot(cmactual_bin, cmpredicted_bin, marker=".",
-             color="green", linestyle="None")
-    ax3.plot(cmactual_bin, poly_bin3(cmactual_bin), color="k")
-    ax3.set_xlabel(r"Actual $C_m$", fontsize=9)
-    ax3.set_ylabel(r"Predicted $C_m$", fontsize=9)
-
-    # Second row
-    clactual_um = df["cl_actual"].to_numpy()
-    clpredicted_um = df[f"cl_um"].to_numpy()
-    coef_um1 = np.polyfit(clactual_um, clpredicted_um, 1)
-    poly_um1 = np.poly1d(coef_um1)
-    ax4.set_title("Unstructured Mesh", fontsize=12)
-    ax4.plot(clactual_um, clpredicted_um, marker=".",
-             color="green", linestyle="None")
-    ax4.plot(clactual_um, poly_um1(clactual_um), color="k")
-    ax4.set_xlabel(r"Actual $C_l$", fontsize=9)
-    ax4.set_ylabel(r"Predicted $C_l$", fontsize=9)
-
-    cdactual_um = df["cd_actual"].to_numpy()
-    cdpredicted_um = df[f"cd_um"].to_numpy()
-    coef_um2 = np.polyfit(cdactual_um, cdpredicted_um, 1)
-    poly_um2 = np.poly1d(coef_um2)
-    ax5.set_title("Unstructured Mesh", fontsize=12)
-    ax5.plot(cdactual_um, cdpredicted_um, marker=".",
-             color="green", linestyle="None")
-    ax5.plot(cdactual_um, poly_um2(cdactual_um), color="k")
-    ax5.set_xlabel(r"Actual $C_d$", fontsize=9)
-    ax5.set_ylabel(r"Predicted $C_d$", fontsize=9)
-
-    cmactual_um = df["cm_actual"].to_numpy()
-    cmpredicted_um = df[f"cm_um"].to_numpy()
-    coef_um3 = np.polyfit(cmactual_um, cmpredicted_um, 1)
-    poly_um3 = np.poly1d(coef_um3)
-    ax6.set_title("Unstructured Mesh", fontsize=12)
-    ax6.plot(cmactual_um, cmpredicted_um, marker=".",
-             color="green", linestyle="None")
-    ax6.plot(cmactual_um, poly_um3(cmactual_um), color="k")
-    ax6.set_xlabel(r"Actual $C_m$", fontsize=9)
-    ax6.set_ylabel(r"Predicted $C_m$", fontsize=9)
-
-    # Third row
-    clactual_sdf = df["cl_actual"].to_numpy()
-    clpredicted_sdf = df[f"cl_sdf"].to_numpy()
-    coef_sdf1 = np.polyfit(clactual_sdf, clpredicted_sdf, 1)
-    poly_sdf1 = np.poly1d(coef_sdf1)
-    ax7.set_title("SDF", fontsize=12)
-    ax7.plot(clactual_sdf, clpredicted_sdf, marker=".",
-             color="green", linestyle="None")
-    ax7.plot(clactual_sdf, poly_sdf1(clactual_sdf), color="k")
-    ax7.set_xlabel(r"Actual $C_l$", fontsize=9)
-    ax7.set_ylabel(r"Predicted $C_l$", fontsize=9)
-
-    cdactual_sdf = df["cd_actual"].to_numpy()
-    cdpredicted_sdf = df[f"cd_sdf"].to_numpy()
-    coef_sdf2 = np.polyfit(cdactual_sdf, cdpredicted_sdf, 1)
-    poly_sdf2 = np.poly1d(coef_sdf2)
-    ax8.set_title("SDF", fontsize=12)
-    ax8.plot(cdactual_sdf, cdpredicted_sdf, marker=".",
-             color="green", linestyle="None")
-    ax8.plot(cdactual_sdf, poly_sdf2(cdactual_sdf), color="k")
-    ax8.set_xlabel(r"Actual $C_d$", fontsize=9)
-    ax8.set_ylabel(r"Predicted $C_d$", fontsize=9)
-
-    cmactual_sdf = df["cm_actual"].to_numpy()
-    cmpredicted_sdf = df[f"cm_sdf"].to_numpy()
-    coef_sdf3 = np.polyfit(cmactual_sdf, cmpredicted_sdf, 1)
-    poly_sdf3 = np.poly1d(coef_sdf3)
-    ax9.set_title("SDF", fontsize=12)
-    ax9.plot(cmactual_sdf, cmpredicted_sdf, marker=".",
-             color="green", linestyle="None")
-    ax9.plot(cmactual_sdf, poly_sdf3(cmactual_sdf), color="k")
-    ax9.set_xlabel(r"Actual $C_m$", fontsize=9)
-    ax9.set_ylabel(r"Predicted $C_m$", fontsize=9)
-
-    plt.subplots_adjust(
-        left=0.1,
-        bottom=0.1,
-        right=0.9,
-        top=0.9,
-        wspace=0.4,
-        hspace=0.5
+    coef = np.polyfit(actual, predicted, 1)
+    polyy = np.poly1d(coef)
+    ax.set_title(f'Score using {render}')
+    ax.plot(
+        actual,
+        predicted,
+        marker=".",
+        color="green",
+        linestyle="None"
     )
-    plt.show()
+
+    ax.plot(
+        actual,
+        polyy(actual),
+        color="k"
+    )
+
+    if mode == 'cl':
+        ax.set_xlabel(r"Actual $C_l$")
+        ax.set_ylabel(r"Predicted $C_l$")
+    elif mode == 'cd':
+        ax.set_xlabel(r"Actual $C_d$")
+        ax.set_ylabel(r"Predicted $C_d$")
+    else:
+        ax.set_xlabel(r"Actual $C_m$")
+        ax.set_ylabel(r"Predicted $C_m$")
+
+    ax.grid(linestyle='--')
+    fig.savefig(f'score_{mode}_{render}.pgf')
     plt.close(fig)
 
 
 if __name__ == "__main__":
-    plot_prediction('cm')
+    plot_score(mode='cm', render='SDF')
