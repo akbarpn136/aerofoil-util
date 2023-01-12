@@ -113,7 +113,7 @@ def plot_prediction(mode="cl"):
         'text.usetex': True,
         'pgf.rcfonts': False,
     })
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(10, 10))
 
     ax.plot(
         df["alpha"].to_numpy(),
@@ -150,7 +150,12 @@ def plot_prediction(mode="cl"):
     )
 
     ax.set_xlabel(r"$\alpha$")
-    ax.set_ylabel(mode)
+    if mode == 'cl':
+        ax.set_ylabel(r'$c_l$')
+    elif mode == 'cd':
+        ax.set_ylabel(r'$c_d$')
+    else:
+        ax.set_ylabel(r'$c_m$')
     ax.legend()
     ax.grid(linestyle='--')
     fig.savefig(f'pred_{mode}.pgf')
